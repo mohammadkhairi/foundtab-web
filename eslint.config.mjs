@@ -30,5 +30,15 @@ export default [
       'max-params': ['error', 1],
     },
   },
+  // HTTP client utilities and Error subclasses are exempt from single-object-param rule
+  {
+    files: ['src/lib/**/*.{ts,tsx}'],
+    rules: { 'max-params': ['error', 3] },
+  },
+  // React component files: array callbacks (map/reduce/filter) legitimately use 2 params
+  {
+    files: ['src/**/*.tsx'],
+    rules: { 'max-params': ['error', 2] },
+  },
   prettierConfig,
 ]
