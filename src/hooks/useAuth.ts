@@ -1,13 +1,5 @@
 import { useEffect, useState } from 'react'
-
-declare global {
-  interface Window {
-    Clerk?: {
-      session?: { getToken: () => Promise<string | null> }
-      user?: { id: string }
-    }
-  }
-}
+import { useAuth as useClerkAuth, useUser } from '@clerk/react'
 
 type AuthState = {
   token: string | undefined
@@ -16,38 +8,21 @@ type AuthState = {
 }
 
 export function useAuth(): AuthState {
-  const [state, setState] = useState<AuthState>({ token: undefined, userId: undefined, loading: true })
+  const { isLoaded, isSignedIn, getToken } = useClerkAuth()
+  const { user } = useUser()
+  const [token, setToken] = useState<string | undefined>()
 
   useEffect(() => {
-    async function load() {
-      const clerk = window.Clerk
-      if (!clerk?.session) {
-        setState({ token: undefined, userId: undefined, loading: false })
-        return
-      }
-      const token = (await clerk.session.getToken()) ?? undefined
-      setState({ token, userId: clerk.user?.id, loading: false })
+    if (!isSignedIn) {
+      setToken(undefined)
+      return
     }
+    void getToken().then((t) => setToken(t ?? undefined))
+  }, [isSignedIn, getToken])
 
-    // Clerk loads asynchronously — wait for it
-    const interval = setInterval(() => {
-      if (window.Clerk?.session !== undefined) {
-        clearInterval(interval)
-        void load()
-      }
-    }, 100)
-
-    // Bail out after 5 seconds
-    const timeout = setTimeout(() => {
-      clearInterval(interval)
-      setState({ token: undefined, userId: undefined, loading: false })
-    }, 5_000)
-
-    return () => {
-      clearInterval(interval)
-      clearTimeout(timeout)
-    }
-  }, [])
-
-  return state
+  return {
+    token,
+    userId: user?.id,
+    loading: !isLoaded,
+  }
 }
