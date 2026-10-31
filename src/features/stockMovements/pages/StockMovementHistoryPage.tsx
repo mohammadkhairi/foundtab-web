@@ -1,19 +1,24 @@
 import { useQuery } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../../../hooks/useAuth'
 import { apiFetch } from '../../../lib/api'
 import EmptyState from '../../../components/EmptyState'
 import ErrorState from '../../../components/ErrorState'
 import LoadingSpinner from '../../../components/LoadingSpinner'
+import Pagination from '../../../components/Pagination'
+import { useT } from '../../../hooks/useT'
+import { useFormatDate } from '../../../hooks/useFormatDate'
+import { formatDelta } from '../../../lib/units'
 
 type StockMovement = {
   id: string
-  rawMaterialName: string
-  movementType: string
-  quantityDelta: number
+  type: string
+  entityType: string
+  entityId: string
+  entityName: string | null
+  quantityDelta: string
   unit: string
-  balanceAfter: number
   notes: string | null
   createdAt: string
 }
@@ -21,66 +26,100 @@ type StockMovement = {
 type ListResponse = {
   items: StockMovement[]
   total: number
+  page: number
+  pageSize: number
 }
 
-const MOVEMENT_LABELS: Record<string, string> = {
-  purchase: 'Pembelian',
-  production: 'Pengeluaran',
-  adjustment: 'Pelarasan',
-  wastage: 'Pembaziran',
+const TYPE_COLORS: Record<string, string> = {
+  PURCHASE: 'text-emerald-600',
+  PRODUCTION_IN: 'text-sky-600',
+  PRODUCTION_OUT: 'text-amber-600',
+  ORDER_OUT: 'text-purple-600',
+  MANUAL_ADJUST: 'text-blue-600',
+  WASTE: 'text-red-500',
 }
 
-const MOVEMENT_COLORS: Record<string, string> = {
-  purchase: 'text-emerald-600',
-  production: 'text-amber-600',
-  adjustment: 'text-sky-600',
-  wastage: 'text-red-500',
+const TYPE_BG: Record<string, string> = {
+  PURCHASE: 'bg-emerald-50 text-emerald-700',
+  PRODUCTION_IN: 'bg-sky-50 text-sky-700',
+  PRODUCTION_OUT: 'bg-amber-50 text-amber-700',
+  ORDER_OUT: 'bg-purple-50 text-purple-700',
+  MANUAL_ADJUST: 'bg-blue-50 text-blue-700',
+  WASTE: 'bg-red-50 text-red-700',
 }
 
-function formatDateTime(iso: string): string {
-  return new Date(iso).toLocaleString('ms-MY', {
-    day: 'numeric', month: 'short',
-    hour: '2-digit', minute: '2-digit',
-  })
+const ENTITY_LABEL: Record<string, string> = {
+  RAW_MATERIAL: 'Material',
+  PRODUCT: 'Product',
+  MENU_ITEM: 'Catalogue',
 }
 
 export default function StockMovementHistoryPage() {
-  const navigate = useNavigate()
   const { token } = useAuth()
+  const t = useT()
+  const { formatDateTime } = useFormatDate()
+  const [searchParams] = useSearchParams()
+
   const [typeFilter, setTypeFilter] = useState<string>('all')
+  const [materialId] = useState<string>(searchParams.get('materialId') ?? '')
+  const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  const [page, setPage] = useState(1)
+
+  const TYPE_LABELS: Record<string, string> = {
+    PURCHASE: t('stockMovements_purchase'),
+    PRODUCTION_IN: t('stockMovements_productionIn'),
+    PRODUCTION_OUT: t('stockMovements_productionOut'),
+    ORDER_OUT: t('stockMovements_orderOut'),
+    MANUAL_ADJUST: t('stockMovements_manualAdjust'),
+    WASTE: t('stockMovements_waste'),
+  }
+
+  const typeFilters = [
+    { value: 'all', label: t('orders_filterAll') },
+    { value: 'PURCHASE', label: t('stockMovements_purchase') },
+    { value: 'PRODUCTION_OUT', label: t('stockMovements_productionOut') },
+    { value: 'MANUAL_ADJUST', label: t('stockMovements_manualAdjust') },
+    { value: 'WASTE', label: t('stockMovements_waste') },
+  ]
+
+  function handleSearchChange(value: string) {
+    setSearch(value)
+    setPage(1)
+    clearTimeout((handleSearchChange as { _t?: ReturnType<typeof setTimeout> })._t)
+    ;(handleSearchChange as { _t?: ReturnType<typeof setTimeout> })._t = setTimeout(() => setDebouncedSearch(value), 300)
+  }
+
+  const queryParams = new URLSearchParams()
+  if (typeFilter !== 'all') queryParams.set('type', typeFilter)
+  if (materialId) queryParams.set('materialId', materialId)
+  if (debouncedSearch) queryParams.set('search', debouncedSearch)
+  queryParams.set('page', String(page))
+  const queryString = queryParams.toString()
 
   const { data, isLoading, isError, refetch } = useQuery({
-    queryKey: ['stockMovements', typeFilter],
+    queryKey: ['stockMovements', typeFilter, materialId, debouncedSearch, page],
     queryFn: () =>
       apiFetch<ListResponse>(
-        `/api/v1/stock-movements${typeFilter !== 'all' ? `?type=${typeFilter}` : ''}`,
+        `/api/v1/stock-movements?${queryString}`,
         { token },
       ),
     enabled: !!token,
   })
 
+  const items = data?.items ?? []
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <header className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10">
-        <div className="flex items-center gap-3 mb-2">
-          <button onClick={() => navigate(-1)} className="text-gray-500" aria-label="Kembali">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <h1 className="text-base font-semibold text-gray-900">Pergerakan stok</h1>
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {[
-            { value: 'all', label: 'Semua' },
-            { value: 'purchase', label: 'Pembelian' },
-            { value: 'production', label: 'Pengeluaran' },
-            { value: 'adjustment', label: 'Pelarasan' },
-          ].map((f) => (
+    <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
+      {/* Mobile header */}
+      <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
+        <h1 className="text-base font-semibold text-gray-900 mb-2">{t('stockMovements_title')}</h1>
+        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar mb-2">
+          {typeFilters.map((f) => (
             <button
               key={f.value}
-              onClick={() => setTypeFilter(f.value)}
-              className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium transition-colors ${
+              onClick={() => { setTypeFilter(f.value); setPage(1) }}
+              className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium transition-colors flex-shrink-0 ${
                 typeFilter === f.value ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-600'
               }`}
             >
@@ -88,41 +127,126 @@ export default function StockMovementHistoryPage() {
             </button>
           ))}
         </div>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          placeholder="Search by name…"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+        />
       </header>
 
-      <div className="p-4">
+      {/* Desktop header */}
+      <header className="hidden md:flex items-center gap-3 bg-white border-b border-gray-200 px-6 h-14 sticky top-0 z-10">
+        <h1 className="text-base font-semibold text-gray-900 flex-1">{t('stockMovements_title')}</h1>
+        <div className="flex gap-2">
+          {typeFilters.map((f) => (
+            <button
+              key={f.value}
+              onClick={() => { setTypeFilter(f.value); setPage(1) }}
+              className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors ${
+                typeFilter === f.value ? 'bg-sky-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          placeholder="Search by name…"
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-sky-500"
+        />
+      </header>
+
+      {/* Mobile list */}
+      <div className="p-4 md:hidden">
         {isLoading && <LoadingSpinner />}
         {isError && <ErrorState onRetry={() => void refetch()} />}
-        {!isLoading && !isError && !data?.items.length && (
-          <EmptyState
-            title="Tiada pergerakan stok"
-            description="Rekod pembelian atau pengeluaran untuk lihat pergerakan stok."
-          />
+        {!isLoading && !isError && !items.length && (
+          <EmptyState title={t('stockMovements_emptyTitle')} description={t('stockMovements_emptyDesc')} />
         )}
-        {!isLoading && !isError && !!data?.items.length && (
+        {!isLoading && !isError && !!items.length && (
           <ul className="space-y-2">
-            {data.items.map((mv) => (
-              <li key={mv.id} className="bg-white rounded-2xl border border-gray-200 p-4">
+            {items.map((mv) => (
+              <li key={mv.id} className="bg-white rounded-2xl border border-gray-100 shadow-card p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{mv.rawMaterialName}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{formatDateTime(mv.createdAt)}</p>
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <p className="text-sm font-medium text-gray-800 truncate">{mv.entityName ?? '—'}</p>
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 flex-shrink-0">
+                        {ENTITY_LABEL[mv.entityType] ?? mv.entityType}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-400">{formatDateTime(mv.createdAt)}</p>
                     {mv.notes && <p className="text-xs text-gray-500 italic mt-0.5">{mv.notes}</p>}
                   </div>
-                  <div className="text-right">
-                    <p className={`text-sm font-semibold ${MOVEMENT_COLORS[mv.movementType] ?? 'text-gray-700'}`}>
-                      {mv.quantityDelta > 0 ? '+' : ''}{mv.quantityDelta} {mv.unit}
+                  <div className="text-right flex-shrink-0">
+                    <p className={`text-sm font-semibold ${TYPE_COLORS[mv.type] ?? 'text-gray-700'}`}>
+                      {formatDelta(parseFloat(mv.quantityDelta), mv.unit)}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5">
-                      {MOVEMENT_LABELS[mv.movementType] ?? mv.movementType}
-                    </p>
-                    <p className="text-xs text-gray-400">Baki: {mv.balanceAfter} {mv.unit}</p>
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium mt-1 inline-block ${TYPE_BG[mv.type] ?? 'bg-gray-100 text-gray-600'}`}>
+                      {TYPE_LABELS[mv.type] ?? mv.type}
+                    </span>
                   </div>
                 </div>
               </li>
             ))}
           </ul>
         )}
+        {data && <Pagination page={data.page} pageSize={data.pageSize} total={data.total} onPageChange={setPage} />}
+      </div>
+
+      {/* Desktop table */}
+      <div className="hidden md:block px-6 py-5">
+        {isLoading && <LoadingSpinner />}
+        {isError && <ErrorState onRetry={() => void refetch()} />}
+        {!isLoading && !isError && !items.length && (
+          <EmptyState title={t('stockMovements_emptyTitle')} description={t('stockMovements_emptyDesc')} />
+        )}
+        {!isLoading && !isError && !!items.length && (
+          <div className="bg-white rounded-xl border border-gray-100 shadow-card overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-gray-50">
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">Item</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">Category</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">{t('stockMovements_type')}</th>
+                  <th className="text-right px-4 py-3 font-medium text-gray-500">{t('stockMovements_change')}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">{t('stockMovements_notes')}</th>
+                  <th className="text-left px-4 py-3 font-medium text-gray-500">{t('stockMovements_date')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {items.map((mv) => (
+                  <tr key={mv.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-4 py-3 font-medium text-gray-800 text-sm">
+                      {mv.entityName ?? <span className="text-gray-400">—</span>}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-500 font-medium">
+                        {ENTITY_LABEL[mv.entityType] ?? mv.entityType}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${TYPE_BG[mv.type] ?? 'bg-gray-100 text-gray-600'}`}>
+                        {TYPE_LABELS[mv.type] ?? mv.type}
+                      </span>
+                    </td>
+                    <td className={`px-4 py-3 text-right font-semibold tabular-nums ${TYPE_COLORS[mv.type] ?? 'text-gray-700'}`}>
+                      {formatDelta(parseFloat(mv.quantityDelta), mv.unit)}
+                    </td>
+                    <td className="px-4 py-3 text-gray-500 text-xs">{mv.notes ?? '—'}</td>
+                    <td className="px-4 py-3 text-gray-400 text-xs whitespace-nowrap">{formatDateTime(mv.createdAt)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+        {data && <Pagination page={data.page} pageSize={data.pageSize} total={data.total} onPageChange={setPage} />}
       </div>
     </div>
   )

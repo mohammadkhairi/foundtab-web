@@ -17,10 +17,10 @@ export class ApiError extends Error {
 
 export async function apiFetch<T>(path: string, options: ApiOptions = {}): Promise<T> {
   const { token, ...rest } = options
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    ...rest.headers,
-  }
+  // Don't set Content-Type for FormData — browser must set it with the multipart boundary
+  const headers: HeadersInit = rest.body instanceof FormData
+    ? { ...rest.headers }
+    : { 'Content-Type': 'application/json', ...rest.headers }
 
   if (token) {
     ;(headers as Record<string, string>)['Authorization'] = `Bearer ${token}`

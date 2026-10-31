@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import RequireAuth from './components/RequireAuth'
 import BottomNav from './components/BottomNav'
+import DesktopSidebar from './components/DesktopSidebar'
 import SignInPage from './features/auth/pages/SignInPage'
 import SignUpPage from './features/auth/pages/SignUpPage'
 import OnboardingFlow, { isOnboardingDone } from './features/onboarding/OnboardingFlow'
@@ -9,12 +10,18 @@ import RawMaterialListPage from './features/rawMaterials/pages/RawMaterialListPa
 import RawMaterialFormPage from './features/rawMaterials/pages/RawMaterialFormPage'
 import PurchaseListPage from './features/purchases/pages/PurchaseListPage'
 import PurchaseFormPage from './features/purchases/pages/PurchaseFormPage'
+import PurchaseDetailPage from './features/purchases/pages/PurchaseDetailPage'
 import OcrReviewPage from './features/purchases/pages/OcrReviewPage'
 import ProductListPage from './features/products/pages/ProductListPage'
 import ProductFormPage from './features/products/pages/ProductFormPage'
-import RecipeBuilderPage from './features/products/pages/RecipeBuilderPage'
+import RecipeListPage from './features/recipes/pages/RecipeListPage'
+import RecipeFormPage from './features/recipes/pages/RecipeFormPage'
+import MenuListPage from './features/menu/pages/MenuListPage'
+import MenuFormPage from './features/menu/pages/MenuFormPage'
 import ProductionFormPage from './features/productions/pages/ProductionFormPage'
 import ProductionHistoryPage from './features/productions/pages/ProductionHistoryPage'
+import ProductionTemplateListPage from './features/productions/pages/ProductionTemplateListPage'
+import ProductionTemplateFormPage from './features/productions/pages/ProductionTemplateFormPage'
 import OrderListPage from './features/orders/pages/OrderListPage'
 import OrderFormPage from './features/orders/pages/OrderFormPage'
 import OrderDetailPage from './features/orders/pages/OrderDetailPage'
@@ -22,13 +29,17 @@ import WhatsAppOrderPage from './features/orders/pages/WhatsAppOrderPage'
 import StockMovementHistoryPage from './features/stockMovements/pages/StockMovementHistoryPage'
 import NotificationSettingsPage from './features/settings/pages/NotificationSettingsPage'
 import DataExportPage from './features/export/pages/DataExportPage'
+import WastagePage from './features/wastage/pages/WastagePage'
 
 function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      {children}
+    <div className="md:flex min-h-screen bg-slate-50">
+      <DesktopSidebar />
+      <main className="flex-1 min-w-0 pb-20 md:pb-0">
+        {children}
+      </main>
       <BottomNav />
-    </>
+    </div>
   )
 }
 
@@ -70,16 +81,29 @@ export default function App() {
       <Route path="/purchases" element={<ProtectedShell><PurchaseListPage /></ProtectedShell>} />
       <Route path="/purchases/scan" element={<ProtectedShell><OcrReviewPage /></ProtectedShell>} />
       <Route path="/purchases/new" element={<ProtectedShell><PurchaseFormPage /></ProtectedShell>} />
+      <Route path="/purchases/:id" element={<ProtectedShell><PurchaseDetailPage /></ProtectedShell>} />
 
       {/* Products */}
       <Route path="/products" element={<ProtectedShell><ProductListPage /></ProtectedShell>} />
       <Route path="/products/new" element={<ProtectedShell><ProductFormPage /></ProtectedShell>} />
       <Route path="/products/:id/edit" element={<ProtectedShell><ProductFormPage /></ProtectedShell>} />
-      <Route path="/products/:id/recipe" element={<ProtectedShell><RecipeBuilderPage /></ProtectedShell>} />
+
+      {/* Recipes */}
+      <Route path="/recipes" element={<ProtectedShell><RecipeListPage /></ProtectedShell>} />
+      <Route path="/recipes/new" element={<ProtectedShell><RecipeFormPage /></ProtectedShell>} />
+      <Route path="/recipes/:id/edit" element={<ProtectedShell><RecipeFormPage /></ProtectedShell>} />
+
+      {/* Catalogue */}
+      <Route path="/catalogue" element={<ProtectedShell><MenuListPage /></ProtectedShell>} />
+      <Route path="/catalogue/new" element={<ProtectedShell><MenuFormPage /></ProtectedShell>} />
+      <Route path="/catalogue/:id/edit" element={<ProtectedShell><MenuFormPage /></ProtectedShell>} />
 
       {/* Productions */}
       <Route path="/productions" element={<ProtectedShell><ProductionHistoryPage /></ProtectedShell>} />
       <Route path="/productions/new" element={<ProtectedShell><ProductionFormPage /></ProtectedShell>} />
+      <Route path="/production-templates" element={<ProtectedShell><ProductionTemplateListPage /></ProtectedShell>} />
+      <Route path="/production-templates/new" element={<ProtectedShell><ProductionTemplateFormPage /></ProtectedShell>} />
+      <Route path="/production-templates/:id/edit" element={<ProtectedShell><ProductionTemplateFormPage /></ProtectedShell>} />
 
       {/* Orders */}
       <Route path="/orders" element={<ProtectedShell><OrderListPage /></ProtectedShell>} />
@@ -89,6 +113,9 @@ export default function App() {
 
       {/* Stock movements */}
       <Route path="/stock-movements" element={<ProtectedShell><StockMovementHistoryPage /></ProtectedShell>} />
+
+      {/* Wastage */}
+      <Route path="/wastage" element={<ProtectedShell><WastagePage /></ProtectedShell>} />
 
       {/* Settings */}
       <Route path="/settings/notifications" element={<ProtectedShell><NotificationSettingsPage /></ProtectedShell>} />

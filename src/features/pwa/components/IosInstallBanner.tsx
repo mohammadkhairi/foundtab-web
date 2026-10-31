@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useT } from '../../../hooks/useT'
 
 function isIos(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent)
@@ -9,6 +10,7 @@ function isInStandaloneMode(): boolean {
 }
 
 export default function IosInstallBanner() {
+  const t = useT()
   const [show, setShow] = useState(false)
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export default function IosInstallBanner() {
         <div className="flex-1">
           <p className="text-sm font-semibold text-gray-900">Pasang FoundTab</p>
           <p className="text-xs text-gray-500 mt-0.5">
-            Ketik <strong>Kongsi</strong> kemudian pilih <strong>Tambah ke Skrin Utama</strong> untuk akses lebih mudah.
+            {t('pwa_iosBannerInstallText')}
           </p>
         </div>
         <button

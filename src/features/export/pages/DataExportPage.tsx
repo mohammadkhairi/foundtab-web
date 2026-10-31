@@ -3,21 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../hooks/useAuth'
 import { apiFetch, ApiError } from '../../../lib/api'
 import { env } from '../../../config/env'
+import { useT } from '../../../hooks/useT'
 
 type ExportType = 'purchases' | 'stock-movements' | 'orders' | 'productions'
 
 type ExportOption = {
   type: ExportType
-  label: string
-  description: string
+  labelKey: 'export_purchases' | 'export_orders' | 'export_stockMovements' | 'export_productions'
+  descKey: 'export_purchasesDesc' | 'export_stockMovementsDesc' | 'export_ordersDesc' | 'export_productionsDesc'
 }
-
-const EXPORT_OPTIONS: ExportOption[] = [
-  { type: 'purchases', label: 'Pembelian', description: 'Semua rekod pembelian dalam tempoh yang dipilih.' },
-  { type: 'stock-movements', label: 'Pergerakan stok', description: 'Log masuk/keluar semua bahan mentah.' },
-  { type: 'orders', label: 'Pesanan', description: 'Senarai pesanan pelanggan dan statusnya.' },
-  { type: 'productions', label: 'Pengeluaran', description: 'Rekod pengeluaran produk siap.' },
-]
 
 type DateRange = {
   from: string
@@ -33,7 +27,15 @@ function getCurrentMonthRange(): DateRange {
 
 export default function DataExportPage() {
   const navigate = useNavigate()
-  const { token } = useAuth()
+  const { refreshToken } = useAuth()
+  const t = useT()
+
+  const EXPORT_OPTIONS: ExportOption[] = [
+    { type: 'purchases', labelKey: 'export_purchases', descKey: 'export_purchasesDesc' },
+    { type: 'stock-movements', labelKey: 'export_stockMovements', descKey: 'export_stockMovementsDesc' },
+    { type: 'orders', labelKey: 'export_orders', descKey: 'export_ordersDesc' },
+    { type: 'productions', labelKey: 'export_productions', descKey: 'export_productionsDesc' },
+  ]
 
   const [selected, setSelected] = useState<ExportType>('purchases')
   const [range, setRange] = useState<DateRange>(getCurrentMonthRange())
@@ -41,13 +43,15 @@ export default function DataExportPage() {
   const [error, setError] = useState<string | null>(null)
 
   async function handleExport() {
+    const freshToken = await refreshToken()
+    if (!freshToken) return
     setExporting(true)
     setError(null)
     try {
       // Backend returns a signed download URL
       const result = await apiFetch<{ url: string }>(
         `/api/v1/export?type=${selected}&from=${range.from}&to=${range.to}`,
-        { token },
+        { token: freshToken },
       )
       // Trigger browser download
       const a = document.createElement('a')
@@ -58,7 +62,7 @@ export default function DataExportPage() {
       if (err instanceof ApiError) {
         setError(err.message)
       } else {
-        setError('Gagal mengeksport. Cuba lagi.')
+        setError(t('export_error'))
       }
     } finally {
       setExporting(false)
@@ -66,20 +70,22 @@ export default function DataExportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-slate-50 pb-20">
       <header className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(-1)} className="text-gray-500" aria-label="Kembali">
+          <button onClick={() => navigate(-1)} className="text-gray-500" aria-label={t('common_back')}>
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-base font-semibold text-gray-900">Eksport data</h1>
+          <h1 className="text-base font-semibold text-gray-900">{t('export_title')}</h1>
         </div>
       </header>
 
       <div className="p-4 space-y-4">
-        <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3">
+        <p className="text-sm text-gray-500">{t('export_desc')}</p>
+
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-4 space-y-3">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Jenis data</p>
           {EXPORT_OPTIONS.map((opt) => (
             <label key={opt.type} className="flex items-start gap-3 cursor-pointer">
@@ -92,14 +98,14 @@ export default function DataExportPage() {
                 className="mt-0.5"
               />
               <div>
-                <p className="text-sm font-medium text-gray-900">{opt.label}</p>
-                <p className="text-xs text-gray-500">{opt.description}</p>
+                <p className="text-sm font-medium text-gray-900">{t(opt.labelKey)}</p>
+                <p className="text-xs text-gray-500">{t(opt.descKey)}</p>
               </div>
             </label>
           ))}
         </div>
 
-        <div className="bg-white rounded-2xl border border-gray-200 p-4 space-y-3">
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-4 space-y-3">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Tempoh</p>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -135,11 +141,11 @@ export default function DataExportPage() {
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
           </svg>
-          {exporting ? 'Menjana fail...' : 'Muat turun CSV'}
+          {exporting ? t('common_loading') : t('export_downloadCsv')}
         </button>
 
         <p className="text-xs text-gray-400 text-center">
-          Data dieksport dalam format CSV. Buka dengan Excel atau Google Sheets.
+          {t('export_csvHint')}
         </p>
       </div>
     </div>

@@ -1,138 +1,141 @@
-import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useT } from '../../../hooks/useT'
 
-type ChecklistStep = {
-  key: string
+type ChecklistStatus = {
+  hasRawMaterials: boolean
+  hasProducts: boolean
+  hasRecipes: boolean
+}
+
+type Props = {
+  status: ChecklistStatus
+}
+
+type Step = {
+  key: keyof ChecklistStatus
   label: string
   description: string
   route: string
+  ctaLabel: string
 }
 
-const STEPS: ChecklistStep[] = [
-  {
-    key: 'raw-material',
-    label: 'Tambah bahan mentah',
-    description: 'Rekod stok bahan yang anda guna untuk masak.',
-    route: '/raw-materials/new',
-  },
-  {
-    key: 'product',
-    label: 'Tambah produk',
-    description: 'Tetapkan produk yang anda jual beserta resepi.',
-    route: '/products/new',
-  },
-  {
-    key: 'purchase',
-    label: 'Rekod pembelian',
-    description: 'Log resit pertama anda untuk jejak kos.',
-    route: '/purchases/new',
-  },
-]
-
-const STORAGE_KEY = 'ft-setup-checklist'
-
-function loadCompleted(): Set<string> {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return new Set()
-    return new Set(JSON.parse(raw) as string[])
-  } catch {
-    return new Set()
-  }
-}
-
-function saveCompleted(keys: Set<string>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...keys]))
-}
-
-export function markStepComplete(key: string) {
-  const completed = loadCompleted()
-  completed.add(key)
-  saveCompleted(completed)
-}
-
-export default function SetupChecklist() {
+export default function SetupChecklist({ status }: Props) {
   const navigate = useNavigate()
-  const [completed, setCompleted] = useState<Set<string>>(loadCompleted)
+  const t = useT()
 
-  useEffect(() => {
-    saveCompleted(completed)
-  }, [completed])
+  const STEPS: Step[] = [
+    {
+      key: 'hasRawMaterials',
+      label: t('checklist_step_rawMaterial'),
+      description: t('checklist_step_rawMaterial_desc'),
+      route: '/raw-materials/new',
+      ctaLabel: t('checklist_start'),
+    },
+    {
+      key: 'hasProducts',
+      label: t('checklist_step_product'),
+      description: t('checklist_step_product_desc'),
+      route: '/products/new',
+      ctaLabel: t('checklist_start'),
+    },
+    {
+      key: 'hasRecipes',
+      label: t('checklist_step_recipe'),
+      description: t('checklist_step_recipe_desc'),
+      route: '/recipes/new',
+      ctaLabel: t('checklist_start'),
+    },
+  ]
 
-  function toggleStep(key: string) {
-    setCompleted((prev) => {
-      const next = new Set(prev)
-      if (next.has(key)) {
-        next.delete(key)
-      } else {
-        next.add(key)
-      }
-      return next
-    })
-  }
-
-  const doneCount = STEPS.filter((s) => completed.has(s.key)).length
+  const doneCount = STEPS.filter((s) => status[s.key]).length
   const allDone = doneCount === STEPS.length
 
-  return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-4">
-      <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-semibold text-gray-900">Senarai semak persediaan</h3>
-        <span className="text-xs text-gray-500">
-          {doneCount}/{STEPS.length}
-        </span>
-      </div>
-
-      {allDone ? (
-        <div className="py-4 text-center">
-          <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-2">
+  if (allDone) {
+    return (
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-4">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-xl bg-green-100 flex items-center justify-center flex-shrink-0">
             <svg className="w-5 h-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <p className="text-sm font-medium text-gray-900">Semua selesai!</p>
-          <p className="text-xs text-gray-500 mt-0.5">FoundTab anda sudah sedia digunakan.</p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-900">{t('checklist_allDone')}</p>
+            <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{t('checklist_allDone_desc')}</p>
+            <button
+              onClick={() => navigate('/help')}
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-sky-600"
+            >
+              {t('checklist_getHelp')}
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
-      ) : (
-        <ul className="space-y-2">
-          {STEPS.map((step) => {
-            const done = completed.has(step.key)
-            return (
-              <li key={step.key} className="flex items-start gap-3">
-                <button
-                  onClick={() => toggleStep(step.key)}
-                  className={`mt-0.5 w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
-                    done
-                      ? 'border-green-500 bg-green-500'
-                      : 'border-gray-300 bg-white'
-                  }`}
-                  aria-label={done ? 'Tandakan belum selesai' : 'Tandakan selesai'}
-                >
-                  {done && (
-                    <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </button>
-                <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium ${done ? 'text-gray-400 line-through' : 'text-gray-900'}`}>
-                    {step.label}
-                  </p>
-                  <p className="text-xs text-gray-500">{step.description}</p>
-                </div>
-                {!done && (
-                  <button
-                    onClick={() => navigate(step.route)}
-                    className="text-xs text-sky-600 font-medium whitespace-nowrap"
-                  >
-                    Mula
-                  </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-4">
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <h3 className="text-sm font-semibold text-gray-900">{t('checklist_title')}</h3>
+          <p className="text-xs text-gray-500 mt-0.5">{t('checklist_subtitle')}</p>
+        </div>
+        <span className="text-xs font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-full">
+          {doneCount}/{STEPS.length}
+        </span>
+      </div>
+
+      {/* Progress bar */}
+      <div className="h-1 bg-gray-100 rounded-full mb-4 overflow-hidden">
+        <div
+          className="h-full bg-sky-500 rounded-full transition-all duration-500"
+          style={{ width: `${(doneCount / STEPS.length) * 100}%` }}
+        />
+      </div>
+
+      <ul className="space-y-3">
+        {STEPS.map((step, idx) => {
+          const done = status[step.key]
+          const isNext = !done && STEPS.slice(0, idx).every((s) => status[s.key])
+          return (
+            <li key={step.key} className={`flex items-start gap-3 ${done ? 'opacity-50' : ''}`}>
+              <div className={`mt-0.5 w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${
+                done
+                  ? 'border-green-500 bg-green-500'
+                  : isNext
+                  ? 'border-sky-400 bg-white'
+                  : 'border-gray-200 bg-white'
+              }`}>
+                {done ? (
+                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <span className={`text-[10px] font-bold ${isNext ? 'text-sky-400' : 'text-gray-300'}`}>{idx + 1}</span>
                 )}
-              </li>
-            )
-          })}
-        </ul>
-      )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className={`text-sm font-medium ${done ? 'line-through text-gray-400' : 'text-gray-900'}`}>
+                  {step.label}
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{step.description}</p>
+              </div>
+              {!done && isNext && (
+                <button
+                  onClick={() => navigate(step.route)}
+                  className="flex-shrink-0 text-xs bg-sky-500 text-white px-3 py-1.5 rounded-lg font-medium"
+                >
+                  {step.ctaLabel}
+                </button>
+              )}
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }
