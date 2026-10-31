@@ -21,7 +21,7 @@ type ListResponse = {
 
 const SCHEDULE_COLORS: Record<string, string> = {
   daily: 'bg-emerald-100 text-emerald-700',
-  weekly: 'bg-sky-100 text-sky-700',
+  weekly: 'bg-brand-100 text-brand-700',
   one_off: 'bg-purple-100 text-purple-700',
   as_needed: 'bg-gray-100 text-gray-600',
 }
@@ -84,7 +84,7 @@ export default function ProductionTemplateListPage() {
           <h1 className="text-base font-semibold text-gray-900">Production Plans</h1>
           <button
             onClick={() => navigate('/production-templates/new')}
-            className="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center"
           >
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -97,7 +97,7 @@ export default function ProductionTemplateListPage() {
         <h1 className="text-xl font-semibold text-gray-900">Production Plans</h1>
         <button
           onClick={() => navigate('/production-templates/new')}
-          className="bg-sky-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-sky-600 transition-colors"
+          className="bg-brand-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-brand-600 transition-colors"
         >
           + New Plan
         </button>
@@ -150,7 +150,7 @@ export default function ProductionTemplateListPage() {
                 <button
                   onClick={() => void handleRun(tmpl.id)}
                   disabled={runningId === tmpl.id}
-                  className="text-xs bg-sky-500 text-white px-3 py-1.5 rounded-lg hover:bg-sky-600 transition-colors disabled:opacity-60 font-medium"
+                  className="text-xs bg-brand-500 text-white px-3 py-1.5 rounded-lg hover:bg-brand-600 transition-colors disabled:opacity-60 font-medium"
                 >
                   {runningId === tmpl.id ? 'Running...' : '▶ Run'}
                 </button>
@@ -164,7 +164,7 @@ export default function ProductionTemplateListPage() {
         {!templates?.length || (
           <button
             onClick={() => navigate('/production-templates/new')}
-            className="w-full border-2 border-dashed border-gray-200 rounded-xl py-3 text-sm text-gray-400 hover:border-sky-300 hover:text-sky-500 transition-colors md:hidden"
+            className="w-full border-2 border-dashed border-gray-200 rounded-xl py-3 text-sm text-gray-400 hover:border-brand-300 hover:text-brand-500 transition-colors md:hidden"
           >
             + New Plan
           </button>

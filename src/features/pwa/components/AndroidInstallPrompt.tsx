@@ -58,7 +58,7 @@ export default function AndroidInstallPrompt() {
         </button>
         <button
           onClick={handleInstall}
-          className="bg-sky-500 text-white text-sm font-medium px-3 py-1.5 rounded-lg"
+          className="bg-brand-500 text-white text-sm font-medium px-3 py-1.5 rounded-lg"
         >
           Pasang
         </button>

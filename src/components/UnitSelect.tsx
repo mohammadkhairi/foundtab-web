@@ -19,7 +19,7 @@ export default function UnitSelect({ value, onChange, className = '', id }: Prop
           if (e.target.value !== '__custom__') onChange(e.target.value)
           else onChange('')
         }}
-        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white"
+        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
       >
         <option value="">Select unit…</option>
         {PRESET_UNITS.map((u) => (
@@ -33,7 +33,7 @@ export default function UnitSelect({ value, onChange, className = '', id }: Prop
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Type unit…"
-          className="mt-2 w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="mt-2 w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           autoFocus
         />
       )}

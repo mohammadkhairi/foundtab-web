@@ -187,12 +187,12 @@ export default function RecipeFormPage() {
       <div className="p-3 border-b border-gray-100">
         <input type="text" value={searchVal} onChange={(e) => onSearch(e.target.value)}
           placeholder={t('recipe_searchMaterial')}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" autoFocus />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" autoFocus />
       </div>
       <ul className="overflow-y-auto max-h-52">
         {items.map((m) => (
           <li key={m.id}>
-            <button onClick={() => onSelect(m)} className="w-full px-4 py-2.5 text-left text-sm text-gray-800 border-b border-gray-50 hover:bg-sky-50 hover:text-sky-700 transition-colors">
+            <button onClick={() => onSelect(m)} className="w-full px-4 py-2.5 text-left text-sm text-gray-800 border-b border-gray-50 hover:bg-brand-50 hover:text-brand-700 transition-colors">
               {m.name}<span className="text-xs text-gray-400 ml-2">({m.baseUnit})</span>
             </button>
           </li>
@@ -207,12 +207,12 @@ export default function RecipeFormPage() {
       <div className="p-3 border-b border-gray-100">
         <input type="text" value={outputSearch} onChange={(e) => setOutputSearch(e.target.value)}
           placeholder="Search products..."
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" autoFocus />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" autoFocus />
       </div>
       <ul className="overflow-y-auto max-h-52">
         {filteredProducts.map((p) => (
           <li key={p.id}>
-            <button onClick={() => addOutput(p)} className="w-full px-4 py-2.5 text-left text-sm text-gray-800 border-b border-gray-50 hover:bg-sky-50 hover:text-sky-700 transition-colors">
+            <button onClick={() => addOutput(p)} className="w-full px-4 py-2.5 text-left text-sm text-gray-800 border-b border-gray-50 hover:bg-brand-50 hover:text-brand-700 transition-colors">
               {p.name}<span className="text-xs text-gray-400 ml-2">({p.unit})</span>
             </button>
           </li>
@@ -245,7 +245,7 @@ export default function RecipeFormPage() {
               <label className="block text-xs font-medium text-gray-600 mb-1.5">{t('recipe_nameLabel')} <span className="text-red-500">*</span></label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                 placeholder={t('recipe_namePlaceholder')}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1.5">Recipe Type</label>
@@ -255,8 +255,8 @@ export default function RecipeFormPage() {
                   onClick={() => setRecipeType('PRODUCTION')}
                   className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
                     recipeType === 'PRODUCTION'
-                      ? 'bg-sky-500 text-white border-sky-500'
-                      : 'bg-white text-gray-600 border-gray-300 hover:border-sky-300'
+                      ? 'bg-brand-500 text-white border-brand-500'
+                      : 'bg-white text-gray-600 border-gray-300 hover:border-brand-300'
                   }`}>
                   Production
                 </button>
@@ -279,7 +279,7 @@ export default function RecipeFormPage() {
               <label className="block text-xs font-medium text-gray-600 mb-1.5">Notes (optional)</label>
               <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)}
                 placeholder="e.g. Loyang 8 inci, makes 24 pieces"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
           </div>
 
@@ -296,7 +296,7 @@ export default function RecipeFormPage() {
                       <p className="text-sm font-medium text-gray-900 flex-1 min-w-0 truncate">{line.name}</p>
                       <input type="number" inputMode="decimal" min="0" step="any" value={line.quantity}
                         onChange={(e) => setIngredients((prev) => prev.map((l, i) => i === idx ? { ...l, quantity: e.target.value } : l))}
-                        className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-brand-500"
                         aria-label="Qty" />
                       <UnitSelect
                         value={line.unit}
@@ -313,14 +313,14 @@ export default function RecipeFormPage() {
                     <input type="text" value={line.description}
                       onChange={(e) => setIngredients((prev) => prev.map((l, i) => i === idx ? { ...l, description: e.target.value } : l))}
                       placeholder={t('recipe_descriptionPlaceholder')}
-                      className="w-full border border-gray-100 bg-gray-50 rounded-lg px-2 py-1.5 text-xs text-gray-500 focus:outline-none focus:ring-1 focus:ring-sky-400 focus:bg-white focus:border-gray-300 placeholder-gray-300" />
+                      className="w-full border border-gray-100 bg-gray-50 rounded-lg px-2 py-1.5 text-xs text-gray-500 focus:outline-none focus:ring-1 focus:ring-brand-400 focus:bg-white focus:border-gray-300 placeholder-gray-300" />
                   </div>
                 ))}
               </div>
             )}
             <div className="relative" ref={ingredientPickerRef}>
               <button onClick={() => { setShowIngredientPicker((v) => !v); setSearch('') }}
-                className="w-full border-2 border-dashed border-gray-300 rounded-xl py-2.5 text-gray-500 text-sm font-medium hover:border-sky-300 hover:text-sky-600 transition-colors">
+                className="w-full border-2 border-dashed border-gray-300 rounded-xl py-2.5 text-gray-500 text-sm font-medium hover:border-brand-300 hover:text-brand-600 transition-colors">
                 + {recipeType === 'YIELD_BREAKDOWN' ? 'Add Input Material' : t('recipe_addIngredient')}
               </button>
               {showIngredientPicker && (
@@ -349,7 +349,7 @@ export default function RecipeFormPage() {
                         <span className="text-xs text-gray-400">×</span>
                         <input type="number" inputMode="decimal" min="0.001" step="any" value={out.quantityPerBatch}
                           onChange={(e) => setOutputs((prev) => prev.map((o, i) => i === idx ? { ...o, quantityPerBatch: e.target.value } : o))}
-                          className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-sky-500"
+                          className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-brand-500"
                           aria-label={t('recipe_outputQty')} />
                         <UnitSelect
                           value={out.unit}
@@ -369,7 +369,7 @@ export default function RecipeFormPage() {
               )}
               <div className="relative" ref={outputPickerRef}>
                 <button onClick={() => { setShowOutputPicker((v) => !v); setOutputSearch('') }}
-                  className="w-full border-2 border-dashed border-sky-300 rounded-xl py-2.5 text-sky-600 text-sm font-medium hover:bg-sky-50 transition-colors">
+                  className="w-full border-2 border-dashed border-brand-300 rounded-xl py-2.5 text-brand-600 text-sm font-medium hover:bg-brand-50 transition-colors">
                   + {t('recipe_addOutput')}
                 </button>
                 {showOutputPicker && (
@@ -434,7 +434,7 @@ export default function RecipeFormPage() {
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           <button onClick={() => void handleSave()} disabled={saving}
-            className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60 hover:bg-sky-600 transition-colors">
+            className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60 hover:bg-brand-600 transition-colors">
             {saving ? t('common_saving') : t('recipe_save')}
           </button>
         </div>

@@ -83,7 +83,7 @@ export default function PurchaseListPage() {
           <button
             data-tour="purchase-scan"
             onClick={() => navigate('/purchases/scan')}
-            className="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center"
             aria-label={t('purchases_scan')}
           >
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,7 +97,7 @@ export default function PurchaseListPage() {
           placeholder={t('purchases_supplierPlaceholder')}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </header>
 
@@ -109,7 +109,7 @@ export default function PurchaseListPage() {
           placeholder={t('purchases_supplierPlaceholder')}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <button
           onClick={() => navigate('/purchases/new')}
@@ -120,7 +120,7 @@ export default function PurchaseListPage() {
         <button
           data-tour="purchase-scan"
           onClick={() => navigate('/purchases/scan')}
-          className="bg-sky-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-sky-600 transition-colors flex items-center gap-2"
+          className="bg-brand-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-brand-600 transition-colors flex items-center gap-2"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
@@ -174,7 +174,7 @@ export default function PurchaseListPage() {
                   <button
                     type="button"
                     onClick={() => navigate(`/purchases/${purchase.id}`)}
-                    className="w-full text-left bg-white rounded-2xl border border-gray-100 shadow-card p-4 hover:border-sky-300 transition-colors active:bg-gray-50"
+                    className="w-full text-left bg-white rounded-2xl border border-gray-100 shadow-card p-4 hover:border-brand-300 transition-colors active:bg-gray-50"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
@@ -248,7 +248,7 @@ export default function PurchaseListPage() {
       <div className="fixed bottom-20 right-4 md:hidden">
         <button
           onClick={() => navigate('/purchases/new')}
-          className="text-xs text-sky-600 bg-white border border-sky-200 rounded-full px-3 py-1.5 shadow-sm"
+          className="text-xs text-brand-600 bg-white border border-brand-200 rounded-full px-3 py-1.5 shadow-sm"
         >
           + {t('common_add')}
         </button>

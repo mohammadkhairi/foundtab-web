@@ -126,7 +126,7 @@ export default function ProductionTemplateFormPage() {
               </label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Monday Batch, Weekend Production"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
 
             <div>
@@ -139,11 +139,11 @@ export default function ProductionTemplateFormPage() {
                     onClick={() => setScheduleType(opt.value)}
                     className={`text-left px-3 py-2.5 rounded-lg border-2 transition-all ${
                       scheduleType === opt.value
-                        ? 'border-sky-500 bg-sky-50'
+                        ? 'border-brand-500 bg-brand-50'
                         : 'border-gray-200 bg-white hover:border-gray-300'
                     }`}
                   >
-                    <p className={`text-sm font-medium ${scheduleType === opt.value ? 'text-sky-700' : 'text-gray-800'}`}>
+                    <p className={`text-sm font-medium ${scheduleType === opt.value ? 'text-brand-700' : 'text-gray-800'}`}>
                       {t(opt.labelKey as Parameters<typeof t>[0])}
                     </p>
                     <p className="text-xs text-gray-400 mt-0.5">
@@ -158,7 +158,7 @@ export default function ProductionTemplateFormPage() {
               <label className="block text-xs font-medium text-gray-600 mb-1.5">Notes (optional)</label>
               <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)}
                 placeholder="e.g. Start at 6am, check oven temp first"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
           </div>
 
@@ -175,7 +175,7 @@ export default function ProductionTemplateFormPage() {
                         type="number" inputMode="decimal" min="0.1" step="0.5"
                         value={item.batchCount}
                         onChange={(e) => setItems((prev) => prev.map((l, i) => i === idx ? { ...l, batchCount: e.target.value } : l))}
-                        className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-brand-500"
                         aria-label="Batches"
                       />
                       <span className="text-xs text-gray-400">batch</span>
@@ -197,8 +197,8 @@ export default function ProductionTemplateFormPage() {
                 {recipes.filter((r) => !items.some((i) => i.recipeId === r.id)).map((r) => (
                   <li key={r.id}>
                     <button onClick={() => addRecipe(r)}
-                      className="w-full px-4 py-2.5 text-left text-sm text-gray-800 hover:bg-sky-50 hover:text-sky-700 transition-colors flex items-center gap-2">
-                      <span className="text-sky-400 font-bold">+</span> {r.name}
+                      className="w-full px-4 py-2.5 text-left text-sm text-gray-800 hover:bg-brand-50 hover:text-brand-700 transition-colors flex items-center gap-2">
+                      <span className="text-brand-400 font-bold">+</span> {r.name}
                     </button>
                   </li>
                 ))}
@@ -212,7 +212,7 @@ export default function ProductionTemplateFormPage() {
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           <button onClick={() => void handleSave()} disabled={saving}
-            className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60 hover:bg-sky-600 transition-colors">
+            className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60 hover:bg-brand-600 transition-colors">
             {saving ? 'Saving...' : 'Save Plan'}
           </button>
         </div>

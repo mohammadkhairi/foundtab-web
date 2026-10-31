@@ -63,14 +63,14 @@ export default function BottomNav() {
             to={item.path}
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center justify-center pt-2 pb-3 gap-1 transition-colors relative ${
-                isActive ? 'text-sky-600' : 'text-gray-400'
+                isActive ? 'text-brand-600' : 'text-gray-400'
               }`
             }
           >
             {({ isActive }) => (
               <>
                 {isActive && (
-                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-sky-500" />
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-brand-500" />
                 )}
                 {item.icon}
                 <span className="text-[10px] font-medium">{item.label}</span>

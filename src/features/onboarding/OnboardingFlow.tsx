@@ -29,7 +29,7 @@ function LangStep({ onNext }: { onNext: () => void }) {
   return (
     <div className="px-4 py-8 max-w-sm mx-auto">
       <div className="mb-8 text-center">
-        <div className="w-14 h-14 rounded-2xl bg-sky-500 flex items-center justify-center mx-auto mb-3">
+        <div className="w-14 h-14 rounded-2xl bg-brand-500 flex items-center justify-center mx-auto mb-3">
           <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
           </svg>
@@ -42,16 +42,16 @@ function LangStep({ onNext }: { onNext: () => void }) {
         <button
           onClick={() => choose('en')}
           className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl border-2 transition-all ${
-            lang === 'en' ? 'border-sky-500 bg-sky-50' : 'border-gray-200 bg-white'
+            lang === 'en' ? 'border-brand-500 bg-brand-50' : 'border-gray-200 bg-white'
           }`}
         >
           <span className="text-2xl">🇬🇧</span>
           <div className="text-left">
-            <p className={`text-sm font-semibold ${lang === 'en' ? 'text-sky-700' : 'text-gray-900'}`}>English</p>
+            <p className={`text-sm font-semibold ${lang === 'en' ? 'text-brand-700' : 'text-gray-900'}`}>English</p>
             <p className="text-xs text-gray-400">English</p>
           </div>
           {lang === 'en' && (
-            <svg className="w-5 h-5 text-sky-500 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 text-brand-500 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
           )}
@@ -60,16 +60,16 @@ function LangStep({ onNext }: { onNext: () => void }) {
         <button
           onClick={() => choose('ms')}
           className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl border-2 transition-all ${
-            lang === 'ms' ? 'border-sky-500 bg-sky-50' : 'border-gray-200 bg-white'
+            lang === 'ms' ? 'border-brand-500 bg-brand-50' : 'border-gray-200 bg-white'
           }`}
         >
           <span className="text-2xl">🇲🇾</span>
           <div className="text-left">
-            <p className={`text-sm font-semibold ${lang === 'ms' ? 'text-sky-700' : 'text-gray-900'}`}>Bahasa Melayu</p>
+            <p className={`text-sm font-semibold ${lang === 'ms' ? 'text-brand-700' : 'text-gray-900'}`}>Bahasa Melayu</p>
             <p className="text-xs text-gray-400">Malay</p>
           </div>
           {lang === 'ms' && (
-            <svg className="w-5 h-5 text-sky-500 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5 text-brand-500 ml-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
             </svg>
           )}
@@ -148,7 +148,7 @@ function OrgStep({ onNext }: { onNext: () => void }) {
   return (
     <div className="px-4 py-8 max-w-sm mx-auto">
       <div className="mb-6 text-center">
-        <div className="w-14 h-14 rounded-2xl bg-sky-500 flex items-center justify-center mx-auto mb-3">
+        <div className="w-14 h-14 rounded-2xl bg-brand-500 flex items-center justify-center mx-auto mb-3">
           <svg className="w-7 h-7 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0H5m14 0h2M5 21H3" />
           </svg>
@@ -168,7 +168,7 @@ function OrgStep({ onNext }: { onNext: () => void }) {
             value={form.name}
             onChange={updateField('name')}
             placeholder={t('onboarding_businessNamePlaceholder')}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
 
@@ -182,7 +182,7 @@ function OrgStep({ onNext }: { onNext: () => void }) {
             value={form.registrationNumber}
             onChange={updateField('registrationNumber')}
             placeholder={t('onboarding_regNumberPlaceholder')}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
 
@@ -194,7 +194,7 @@ function OrgStep({ onNext }: { onNext: () => void }) {
             id="industry"
             value={form.industry}
             onChange={(e) => setForm((prev) => ({ ...prev, industry: e.target.value, subIndustry: '' }))}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white"
+            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           >
             {INDUSTRIES.map((ind) => (
               <option key={ind.value} value={ind.value}>
@@ -213,7 +213,7 @@ function OrgStep({ onNext }: { onNext: () => void }) {
               id="sub-industry"
               value={form.subIndustry}
               onChange={updateField('subIndustry')}
-              className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white"
+              className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
             >
               <option value="">{t('onboarding_subIndustryPlaceholder')}</option>
               {subIndustries.map((s) => (
@@ -230,7 +230,7 @@ function OrgStep({ onNext }: { onNext: () => void }) {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60"
+          className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60"
         >
           {loading ? t('common_saving') : t('common_continue')}
         </button>
@@ -267,7 +267,7 @@ function PwaStep({ onNext }: { onNext: () => void }) {
 
       <button
         onClick={onNext}
-        className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm"
+        className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm"
       >
         {t('common_continue')}
       </button>
@@ -375,7 +375,7 @@ export default function OnboardingFlow() {
           <div
             key={s}
             className={`w-2 h-2 rounded-full mx-1 transition-colors ${
-              i === currentIdx ? 'bg-sky-500' : i < currentIdx ? 'bg-sky-200' : 'bg-gray-200'
+              i === currentIdx ? 'bg-brand-500' : i < currentIdx ? 'bg-brand-200' : 'bg-gray-200'
             }`}
           />
         ))}

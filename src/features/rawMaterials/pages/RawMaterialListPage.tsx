@@ -74,7 +74,7 @@ export default function RawMaterialListPage() {
           <button
             data-tour="raw-material-add"
             onClick={() => navigate('/raw-materials/new')}
-            className="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center"
             aria-label={t('rawMaterials_add')}
           >
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -87,7 +87,7 @@ export default function RawMaterialListPage() {
           placeholder={t('rawMaterials_namePlaceholder')}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </header>
 
@@ -99,12 +99,12 @@ export default function RawMaterialListPage() {
           placeholder={t('rawMaterials_namePlaceholder')}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <button
           data-tour="raw-material-add"
           onClick={() => navigate('/raw-materials/new')}
-          className="bg-sky-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-sky-600 transition-colors whitespace-nowrap"
+          className="bg-brand-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-brand-600 transition-colors whitespace-nowrap"
         >
           + {t('rawMaterials_add')}
         </button>
@@ -203,7 +203,7 @@ export default function RawMaterialListPage() {
                                 {t('rawMaterials_low')}
                               </span>
                             )}
-                            <span className="text-xs text-sky-500 font-medium px-2 py-1">
+                            <span className="text-xs text-brand-500 font-medium px-2 py-1">
                               {t('common_edit')}
                             </span>
                           </div>

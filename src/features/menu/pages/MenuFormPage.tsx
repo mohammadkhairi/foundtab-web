@@ -126,12 +126,12 @@ export default function MenuFormPage() {
       <div className="p-3 border-b border-gray-100">
         <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
           placeholder="Search products..."
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" autoFocus />
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" autoFocus />
       </div>
       <ul className="overflow-y-auto max-h-52">
         {filtered.map((p) => (
           <li key={p.id}>
-            <button onClick={() => addProduct(p)} className="w-full px-4 py-2.5 text-left text-sm text-gray-800 border-b border-gray-50 hover:bg-sky-50 hover:text-sky-700 transition-colors">
+            <button onClick={() => addProduct(p)} className="w-full px-4 py-2.5 text-left text-sm text-gray-800 border-b border-gray-50 hover:bg-brand-50 hover:text-brand-700 transition-colors">
               {p.name}<span className="text-xs text-gray-400 ml-2">({p.unit})</span>
             </button>
           </li>
@@ -164,34 +164,34 @@ export default function MenuFormPage() {
               <label className="block text-xs font-medium text-gray-600 mb-1.5">Menu item name <span className="text-red-500">*</span></label>
               <input type="text" value={name} onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Set A Lunch, Box of 12 Cookies"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1.5">SKU <span className="text-gray-400 font-normal">(optional)</span></label>
               <input type="text" value={sku} onChange={(e) => setSku(e.target.value)}
                 placeholder="e.g. CAT-001"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1.5">Price (RM) <span className="text-red-500">*</span></label>
               <input type="number" inputMode="decimal" min="0" step="0.01" value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="e.g. 8.50"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1.5">Expiry duration (days, optional)</label>
               <input type="number" inputMode="numeric" min="1" step="1" value={expiryDurationDays}
                 onChange={(e) => setExpiryDurationDays(e.target.value)}
                 placeholder="e.g. 3"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
           </div>
 
           {/* Type indicator */}
           {label && (
-            <div className="bg-sky-50 border border-sky-200 rounded-xl px-4 py-2.5">
-              <p className="text-xs font-medium text-sky-700">Type: {label}</p>
+            <div className="bg-brand-50 border border-brand-200 rounded-xl px-4 py-2.5">
+              <p className="text-xs font-medium text-brand-700">Type: {label}</p>
             </div>
           )}
 
@@ -207,7 +207,7 @@ export default function MenuFormPage() {
                       <span className="text-xs text-gray-400">×</span>
                       <input type="number" inputMode="decimal" min="0.001" step="any" value={comp.quantity}
                         onChange={(e) => setComponents((prev) => prev.map((c, i) => i === idx ? { ...c, quantity: e.target.value } : c))}
-                        className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-sky-500"
+                        className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-brand-500"
                         aria-label="Qty" />
                       <span className="text-xs text-gray-400">{comp.unit}</span>
                     </div>
@@ -223,7 +223,7 @@ export default function MenuFormPage() {
             )}
             <div className="relative" ref={pickerRef}>
               <button onClick={() => { setShowPicker((v) => !v); setSearch('') }}
-                className="w-full border-2 border-dashed border-sky-300 rounded-xl py-2.5 text-sky-600 text-sm font-medium hover:bg-sky-50 transition-colors">
+                className="w-full border-2 border-dashed border-brand-300 rounded-xl py-2.5 text-brand-600 text-sm font-medium hover:bg-brand-50 transition-colors">
                 + Add product
               </button>
               {showPicker && (
@@ -237,7 +237,7 @@ export default function MenuFormPage() {
           {error && <p className="text-sm text-red-600">{error}</p>}
 
           <button onClick={() => void handleSave()} disabled={saving}
-            className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60 hover:bg-sky-600 transition-colors">
+            className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60 hover:bg-brand-600 transition-colors">
             {saving ? t('common_saving') : t('common_save')}
           </button>
         </div>

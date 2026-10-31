@@ -140,7 +140,7 @@ export default function RecordWastageModal({ preselectedProduct, onClose, onSucc
                     }}
                     className={`flex-1 py-2 rounded-lg text-sm font-medium border transition-colors ${
                       entityType === type
-                        ? 'bg-sky-50 border-sky-500 text-sky-700'
+                        ? 'bg-brand-50 border-brand-500 text-brand-700'
                         : 'border-gray-200 text-gray-600 hover:border-gray-300'
                     }`}
                   >
@@ -162,7 +162,7 @@ export default function RecordWastageModal({ preselectedProduct, onClose, onSucc
               <select
                 value={selectedProductId}
                 onChange={(e) => setSelectedProductId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
               >
                 <option value="">{t('wastage_selectProduct')}</option>
                 {productsData?.items.map((p) => (
@@ -173,7 +173,7 @@ export default function RecordWastageModal({ preselectedProduct, onClose, onSucc
               <select
                 value={selectedMaterialId}
                 onChange={(e) => setSelectedMaterialId(e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
               >
                 <option value="">{t('wastage_selectMaterial')}</option>
                 {materialsData?.items.map((m) => (
@@ -195,7 +195,7 @@ export default function RecordWastageModal({ preselectedProduct, onClose, onSucc
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 placeholder="0"
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
               {unit && (
                 <div className="border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-500 bg-gray-50 min-w-[60px] text-center">
@@ -217,7 +217,7 @@ export default function RecordWastageModal({ preselectedProduct, onClose, onSucc
                     value={r}
                     checked={reason === r}
                     onChange={() => setReason(r)}
-                    className="text-sky-500 focus:ring-sky-500"
+                    className="text-brand-500 focus:ring-brand-500"
                   />
                   <span className="text-sm text-gray-700">{reasonLabel(r)}</span>
                 </label>
@@ -235,7 +235,7 @@ export default function RecordWastageModal({ preselectedProduct, onClose, onSucc
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder={t('wastage_notesPlaceholder')}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
@@ -244,7 +244,7 @@ export default function RecordWastageModal({ preselectedProduct, onClose, onSucc
           <button
             type="submit"
             disabled={saving}
-            className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm hover:bg-sky-600 transition-colors disabled:opacity-60"
+            className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm hover:bg-brand-600 transition-colors disabled:opacity-60"
           >
             {saving ? t('common_saving') : t('wastage_recordWastage')}
           </button>

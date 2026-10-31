@@ -216,7 +216,7 @@ export default function OrderFormPage() {
                 step="1"
                 value={item.quantity}
                 onChange={updateItemField(idx, 'quantity')}
-                className="w-20 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                className="w-20 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 aria-label="Qty"
               />
               <div className="flex-1 relative">
@@ -229,7 +229,7 @@ export default function OrderFormPage() {
                   value={item.pricePerUnit}
                   onChange={updateItemField(idx, 'pricePerUnit')}
                   placeholder="0.00"
-                  className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   aria-label="Price per unit"
                 />
               </div>
@@ -237,7 +237,7 @@ export default function OrderFormPage() {
           ) : null}
         </div>
       ))}
-      <button type="button" onClick={addItem} className="text-sky-600 text-sm font-medium hover:text-sky-700">
+      <button type="button" onClick={addItem} className="text-brand-600 text-sm font-medium hover:text-brand-700">
         + {t('orders_addItem')}
       </button>
     </div>
@@ -271,13 +271,13 @@ export default function OrderFormPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="cust-name-m">
                 {t('orders_customerName')} <span className="text-gray-400">({t('common_optional')})</span>
               </label>
-              <input id="cust-name-m" type="text" value={form.customerName} onChange={updateField('customerName')} placeholder={t('orders_customerNamePlaceholder')} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              <input id="cust-name-m" type="text" value={form.customerName} onChange={updateField('customerName')} placeholder={t('orders_customerNamePlaceholder')} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="cust-phone-m">
                 {t('orders_customerPhone')} <span className="text-gray-400">({t('common_optional')})</span>
               </label>
-              <input id="cust-phone-m" type="tel" value={form.customerPhone} onChange={updateField('customerPhone')} placeholder={t('orders_customerPhonePlaceholder')} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+              <input id="cust-phone-m" type="tel" value={form.customerPhone} onChange={updateField('customerPhone')} placeholder={t('orders_customerPhonePlaceholder')} className="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
             </div>
           </div>
 
@@ -296,12 +296,12 @@ export default function OrderFormPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="order-notes-m">
               {t('orders_notes')} <span className="text-gray-400">({t('common_optional')})</span>
             </label>
-            <textarea id="order-notes-m" value={form.notes} onChange={updateField('notes')} rows={3} placeholder={t('orders_notesPlaceholder')} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none" />
+            <textarea id="order-notes-m" value={form.notes} onChange={updateField('notes')} rows={3} placeholder={t('orders_notesPlaceholder')} className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
           </div>
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          <button type="submit" disabled={saving} className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60">
+          <button type="submit" disabled={saving} className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60">
             {saving ? t('common_saving') : t('common_save')}
           </button>
         </form>
@@ -316,13 +316,13 @@ export default function OrderFormPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="cust-name-d">
                     {t('orders_customerName')} <span className="text-gray-400 font-normal">({t('common_optional')})</span>
                   </label>
-                  <input id="cust-name-d" type="text" value={form.customerName} onChange={updateField('customerName')} placeholder={t('orders_customerNamePlaceholder')} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  <input id="cust-name-d" type="text" value={form.customerName} onChange={updateField('customerName')} placeholder={t('orders_customerNamePlaceholder')} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="cust-phone-d">
                     {t('orders_customerPhone')} <span className="text-gray-400 font-normal">({t('common_optional')})</span>
                   </label>
-                  <input id="cust-phone-d" type="tel" value={form.customerPhone} onChange={updateField('customerPhone')} placeholder={t('orders_customerPhonePlaceholder')} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  <input id="cust-phone-d" type="tel" value={form.customerPhone} onChange={updateField('customerPhone')} placeholder={t('orders_customerPhonePlaceholder')} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
                 </div>
               </div>
             </div>
@@ -344,14 +344,14 @@ export default function OrderFormPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1.5" htmlFor="order-notes-d">
                 {t('orders_notes')} <span className="text-gray-400 font-normal">({t('common_optional')})</span>
               </label>
-              <textarea id="order-notes-d" value={form.notes} onChange={updateField('notes')} rows={3} placeholder={t('orders_notesPlaceholder')} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none" />
+              <textarea id="order-notes-d" value={form.notes} onChange={updateField('notes')} rows={3} placeholder={t('orders_notesPlaceholder')} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none" />
             </div>
 
             {error && <p className="text-sm text-red-600">{error}</p>}
           </div>
 
           <div className="px-6 py-4 border-t border-gray-100 flex justify-end">
-            <button type="submit" disabled={saving} className="bg-sky-500 text-white font-semibold px-6 py-2.5 rounded-lg text-sm hover:bg-sky-600 transition-colors disabled:opacity-60">
+            <button type="submit" disabled={saving} className="bg-brand-500 text-white font-semibold px-6 py-2.5 rounded-lg text-sm hover:bg-brand-600 transition-colors disabled:opacity-60">
               {saving ? t('common_saving') : t('common_save')}
             </button>
           </div>

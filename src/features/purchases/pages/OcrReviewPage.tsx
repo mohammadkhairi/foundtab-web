@@ -531,17 +531,17 @@ export default function OcrReviewPage() {
               tabIndex={0}
               onClick={() => fileRef.current?.click()}
               onKeyDown={(e) => { if (e.key === 'Enter') fileRef.current?.click() }}
-              className="bg-white border-2 border-dashed border-sky-300 rounded-2xl p-16 text-center cursor-pointer hover:border-sky-400 transition-colors flex flex-col items-center justify-center min-h-64"
+              className="bg-white border-2 border-dashed border-brand-300 rounded-2xl p-16 text-center cursor-pointer hover:border-brand-400 transition-colors flex flex-col items-center justify-center min-h-64"
             >
               {uploading ? (
                 <div className="space-y-2">
-                  <div className="w-10 h-10 rounded-full border-2 border-sky-400 border-t-transparent animate-spin mx-auto" />
+                  <div className="w-10 h-10 rounded-full border-2 border-brand-400 border-t-transparent animate-spin mx-auto" />
                   <p className="text-sm text-gray-500">{t('purchases_extracting')}</p>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <div className="w-14 h-14 rounded-full bg-sky-100 flex items-center justify-center mx-auto">
-                    <svg className="w-7 h-7 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <div className="w-14 h-14 rounded-full bg-brand-100 flex items-center justify-center mx-auto">
+                    <svg className="w-7 h-7 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -553,7 +553,7 @@ export default function OcrReviewPage() {
             </div>
             <input ref={fileRef} type="file" accept="image/*" capture="environment" onChange={handleFileSelect} className="hidden" />
             {error && <p className="text-sm text-red-600 text-center">{error}</p>}
-            <button onClick={() => navigate('/purchases/new')} className="w-full text-sky-600 text-sm font-medium py-2">
+            <button onClick={() => navigate('/purchases/new')} className="w-full text-brand-600 text-sm font-medium py-2">
               {t('purchases_manualEntry')}
             </button>
           </div>
@@ -566,16 +566,16 @@ export default function OcrReviewPage() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 space-y-3">
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">{t('purchases_supplier')}</label>
-                <input type="text" value={fields.supplierName} onChange={updateField('supplierName')} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                <input type="text" value={fields.supplierName} onChange={updateField('supplierName')} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">{t('purchases_date')}</label>
-                  <input type="date" value={fields.receiptDate} onChange={updateField('receiptDate')} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  <input type="date" value={fields.receiptDate} onChange={updateField('receiptDate')} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-600 mb-1">{t('purchases_totalAmount')} (RM)</label>
-                  <input type="number" inputMode="decimal" min="0" step="0.01" value={fields.totalAmount} onChange={updateField('totalAmount')} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500" />
+                  <input type="number" inputMode="decimal" min="0" step="0.01" value={fields.totalAmount} onChange={updateField('totalAmount')} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
                 </div>
               </div>
             </div>
@@ -604,7 +604,7 @@ export default function OcrReviewPage() {
 
             <button
               onClick={() => setPhase('review')}
-              className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm"
+              className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm"
             >
               Review {unmatchedItems.length} items →
             </button>
@@ -660,7 +660,7 @@ export default function OcrReviewPage() {
                     <p className="text-sm font-medium text-gray-900 mb-3">Do you want to track this in your stock?</p>
                     <button
                       onClick={() => trackItem(reviewIdx)}
-                      className="w-full flex items-center gap-3 p-3 bg-sky-50 border border-sky-200 rounded-xl text-sm font-medium text-sky-700 mb-2"
+                      className="w-full flex items-center gap-3 p-3 bg-brand-50 border border-brand-200 rounded-xl text-sm font-medium text-brand-700 mb-2"
                     >
                       <span>✓</span> Yes, track this item
                     </button>
@@ -686,18 +686,18 @@ export default function OcrReviewPage() {
                     type="text"
                     value={currentUnmatchedItem.mappedMaterialName}
                     onChange={(e) => updateItemName(reviewIdx, e.target.value)}
-                    className="w-full border border-amber-200 bg-amber-50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full border border-amber-200 bg-amber-50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   <p className="text-xs text-gray-400">Use a simple name, e.g. "TEPUNG GANDUM" not "TEPUNG GANDUM CAP SAWAH"</p>
                   <button
                     onClick={() => advanceReview()}
-                    className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm"
+                    className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm"
                   >
                     Save & next →
                   </button>
                   <button
                     onClick={() => setShowPickerForIdx(reviewIdx)}
-                    className="block w-full text-center text-xs text-sky-600 font-medium"
+                    className="block w-full text-center text-xs text-brand-600 font-medium"
                   >
                     Link to existing item instead →
                   </button>
@@ -727,7 +727,7 @@ export default function OcrReviewPage() {
                               key={m.id}
                               type="button"
                               onClick={() => linkToExisting(reviewIdx, m.id)}
-                              className="px-3 py-1.5 bg-sky-50 border border-sky-200 text-sky-700 text-xs font-medium rounded-full hover:bg-sky-100 transition-colors"
+                              className="px-3 py-1.5 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-medium rounded-full hover:bg-brand-100 transition-colors"
                             >
                               {m.name}
                             </button>
@@ -773,7 +773,7 @@ export default function OcrReviewPage() {
 
                       {/* Material change panel */}
                       {isEditing && (
-                        <div className="space-y-2 bg-sky-50 rounded-xl p-3">
+                        <div className="space-y-2 bg-brand-50 rounded-xl p-3">
                           <p className="text-xs font-medium text-gray-700">Select material or type a name:</p>
                           <SearchableSelect
                             autoOpen
@@ -815,10 +815,10 @@ export default function OcrReviewPage() {
 
                       {/* Split editor */}
                       {isSplitting && (
-                        <div className="space-y-3 bg-sky-50 rounded-xl p-3">
+                        <div className="space-y-3 bg-brand-50 rounded-xl p-3">
                           <p className="text-xs font-medium text-gray-600">Split into separate stock items:</p>
                           {item.splits.map((s, si) => (
-                            <div key={si} className="space-y-1.5 pb-3 border-b border-sky-100 last:border-0 last:pb-0">
+                            <div key={si} className="space-y-1.5 pb-3 border-b border-brand-100 last:border-0 last:pb-0">
                               <div className="flex items-center gap-1.5">
                                 <div className="flex-1 min-w-0">
                                   <SearchableSelect
@@ -855,7 +855,7 @@ export default function OcrReviewPage() {
                                   value={s.quantity}
                                   onChange={(e) => updateSplit(i, si, { quantity: e.target.value })}
                                   placeholder="Qty"
-                                  className="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-sky-400"
+                                  className="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-brand-400"
                                 />
                                 <div className="flex-1">
                                   <UnitSelect value={s.unit} onChange={(u) => updateSplit(i, si, { unit: u })} />
@@ -866,15 +866,15 @@ export default function OcrReviewPage() {
                           <button
                             type="button"
                             onClick={() => addSplitRow(i)}
-                            className="text-xs text-sky-600 font-medium"
+                            className="text-xs text-brand-600 font-medium"
                           >
                             + Add item
                           </button>
-                          <div className="flex items-center gap-3 pt-1 border-t border-sky-100">
+                          <div className="flex items-center gap-3 pt-1 border-t border-brand-100">
                             <button
                               type="button"
                               onClick={() => setSplittingIdx(null)}
-                              className="flex-1 bg-sky-500 text-white font-semibold py-2 rounded-xl text-xs"
+                              className="flex-1 bg-brand-500 text-white font-semibold py-2 rounded-xl text-xs"
                             >
                               Done
                             </button>
@@ -908,7 +908,7 @@ export default function OcrReviewPage() {
                                   setEditingUnitIdx(editingUnitIdx === i ? null : i)
                                   setEditingUnitQty(String(item.quantity))
                                 }}
-                                className="text-xs text-gray-400 hover:text-sky-600 border-b border-dashed border-gray-300 hover:border-sky-400 transition-colors"
+                                className="text-xs text-gray-400 hover:text-brand-600 border-b border-dashed border-gray-300 hover:border-brand-400 transition-colors"
                               >
                                 {item.quantity} {item.unit}
                               </button>
@@ -917,14 +917,14 @@ export default function OcrReviewPage() {
                               <button
                                 type="button"
                                 onClick={() => { openSplit(i); setEditingUnitIdx(null) }}
-                                className="text-xs text-sky-600 font-medium px-2 py-1 rounded-lg hover:bg-sky-50 transition-colors"
+                                className="text-xs text-brand-600 font-medium px-2 py-1 rounded-lg hover:bg-brand-50 transition-colors"
                               >
                                 Split
                               </button>
                               <button
                                 type="button"
                                 onClick={() => { setEditingConfirmIdx(i); setEditingUnitIdx(null) }}
-                                className="text-xs text-sky-600 font-medium px-2 py-1 rounded-lg hover:bg-sky-50 transition-colors"
+                                className="text-xs text-brand-600 font-medium px-2 py-1 rounded-lg hover:bg-brand-50 transition-colors"
                               >
                                 Change
                               </button>
@@ -932,14 +932,14 @@ export default function OcrReviewPage() {
                           </div>
                           {/* Unit override panel */}
                           {editingUnitIdx === i && (
-                            <div className="flex items-center gap-2 bg-sky-50 rounded-xl p-2">
+                            <div className="flex items-center gap-2 bg-brand-50 rounded-xl p-2">
                               <input
                                 type="number"
                                 min="0"
                                 step="any"
                                 value={editingUnitQty}
                                 onChange={(e) => setEditingUnitQty(e.target.value)}
-                                className="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-sky-400"
+                                className="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-brand-400"
                               />
                               <div className="flex-1">
                                 <UnitSelect
@@ -982,7 +982,7 @@ export default function OcrReviewPage() {
                             <button
                               type="button"
                               onClick={() => setSplittingIdx(i)}
-                              className="text-xs text-sky-600 font-medium"
+                              className="text-xs text-brand-600 font-medium"
                             >
                               Edit splits
                             </button>
@@ -1004,7 +1004,7 @@ export default function OcrReviewPage() {
                           {item.pendingVariantNames.length > 0 && (
                             <div className="flex flex-wrap gap-1">
                               {item.pendingVariantNames.map((v) => (
-                                <span key={v} className="inline-flex items-center gap-1 text-[10px] bg-sky-50 text-sky-700 px-1.5 py-0.5 rounded-full">
+                                <span key={v} className="inline-flex items-center gap-1 text-[10px] bg-brand-50 text-brand-700 px-1.5 py-0.5 rounded-full">
                                   {v}
                                   <button
                                     type="button"
@@ -1017,7 +1017,7 @@ export default function OcrReviewPage() {
                                         ),
                                       )
                                     }
-                                    className="text-sky-400 hover:text-sky-600"
+                                    className="text-brand-400 hover:text-brand-600"
                                   >×</button>
                                 </span>
                               ))}
@@ -1044,7 +1044,7 @@ export default function OcrReviewPage() {
                                 }
                               }}
                               placeholder="e.g. CAP LAYAR"
-                              className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-sky-400"
+                              className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-brand-400"
                             />
                             <button
                               type="button"
@@ -1060,7 +1060,7 @@ export default function OcrReviewPage() {
                                 )
                                 setVariantInputs((prev) => ({ ...prev, [i]: '' }))
                               }}
-                              className="text-xs bg-sky-100 text-sky-700 font-medium px-2 py-1.5 rounded-lg hover:bg-sky-200 transition-colors"
+                              className="text-xs bg-brand-100 text-brand-700 font-medium px-2 py-1.5 rounded-lg hover:bg-brand-200 transition-colors"
                             >
                               Add
                             </button>
@@ -1080,7 +1080,7 @@ export default function OcrReviewPage() {
             {error && <p className="text-sm text-red-600">{error}</p>}
             <button
               onClick={() => void handleConfirm()}
-              className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm"
+              className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm"
             >
               Yes, all good
             </button>
@@ -1090,7 +1090,7 @@ export default function OcrReviewPage() {
         {/* Saving phase */}
         {phase === 'saving' && (
           <div className="flex flex-col items-center justify-center py-16 space-y-3">
-            <div className="w-10 h-10 rounded-full border-2 border-sky-400 border-t-transparent animate-spin" />
+            <div className="w-10 h-10 rounded-full border-2 border-brand-400 border-t-transparent animate-spin" />
             <p className="text-sm text-gray-500">{t('common_saving')}</p>
           </div>
         )}

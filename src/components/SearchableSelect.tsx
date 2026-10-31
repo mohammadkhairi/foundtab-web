@@ -75,7 +75,7 @@ export default function SearchableSelect({ options, value, onChange, placeholder
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white text-left focus:outline-none focus:ring-2 focus:ring-sky-500"
+        className="w-full flex items-center justify-between border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white text-left focus:outline-none focus:ring-2 focus:ring-brand-500"
       >
         <span className={selectedLabel ? 'text-gray-700' : 'text-gray-400'}>
           {selectedLabel || placeholder}
@@ -123,7 +123,7 @@ export default function SearchableSelect({ options, value, onChange, placeholder
                   type="button"
                   onClick={selectCreate}
                   className={`w-full text-left px-3 py-2.5 text-sm flex items-center gap-2 transition-colors ${
-                    value === createOption.id && !query ? 'bg-sky-50 text-sky-700 font-medium' : 'text-sky-600 hover:bg-sky-50'
+                    value === createOption.id && !query ? 'bg-brand-50 text-brand-700 font-medium' : 'text-brand-600 hover:bg-brand-50'
                   }`}
                 >
                   <svg className="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -142,7 +142,7 @@ export default function SearchableSelect({ options, value, onChange, placeholder
                     type="button"
                     onClick={() => select(option.id)}
                     className={`w-full text-left px-3 py-2.5 text-sm transition-colors ${
-                      value === option.id ? 'bg-sky-50 text-sky-700 font-medium' : 'text-gray-700 hover:bg-gray-50'
+                      value === option.id ? 'bg-brand-50 text-brand-700 font-medium' : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
                     {option.label}

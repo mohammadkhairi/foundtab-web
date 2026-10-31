@@ -115,7 +115,7 @@ export default function PurchaseFormPage() {
             value={form.supplierName}
             onChange={updateField('supplierName')}
             placeholder={t('purchases_supplierPlaceholder')}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
 
@@ -128,7 +128,7 @@ export default function PurchaseFormPage() {
             type="date"
             value={form.receiptDate}
             onChange={updateField('receiptDate')}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
 
@@ -145,7 +145,7 @@ export default function PurchaseFormPage() {
             value={form.totalAmount}
             onChange={updateField('totalAmount')}
             placeholder="0.00"
-            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           />
         </div>
 
@@ -159,7 +159,7 @@ export default function PurchaseFormPage() {
                   value={item.rawMaterialName}
                   onChange={updateItem(idx, 'rawMaterialName')}
                   placeholder={t('purchases_itemNamePlaceholder')}
-                  className="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 {items.length > 1 && (
                   <button type="button" onClick={() => removeItem(idx)} className="text-gray-300 hover:text-red-400">
@@ -178,14 +178,14 @@ export default function PurchaseFormPage() {
                   value={item.quantity}
                   onChange={updateItem(idx, 'quantity')}
                   placeholder={t('purchases_quantity')}
-                  className="w-20 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-20 border border-gray-300 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 <input
                   type="text"
                   value={item.purchaseUnit}
                   onChange={updateItem(idx, 'purchaseUnit')}
                   placeholder="kg"
-                  className="w-16 border border-gray-300 rounded-xl px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                  className="w-16 border border-gray-300 rounded-xl px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 <div className="flex-1 relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">RM</span>
@@ -197,13 +197,13 @@ export default function PurchaseFormPage() {
                     value={item.pricePerUnit}
                     onChange={updateItem(idx, 'pricePerUnit')}
                     placeholder={t('purchases_unitPrice')}
-                    className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+                    className="w-full border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
             </div>
           ))}
-          <button type="button" onClick={addItem} className="text-sky-600 text-sm font-medium">
+          <button type="button" onClick={addItem} className="text-brand-600 text-sm font-medium">
             + {t('purchases_addItem')}
           </button>
         </div>
@@ -218,7 +218,7 @@ export default function PurchaseFormPage() {
             onChange={updateField('notes')}
             rows={3}
             placeholder={t('purchases_notesPlaceholder')}
-            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none"
+            className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
           />
         </div>
 
@@ -227,7 +227,7 @@ export default function PurchaseFormPage() {
         <button
           type="submit"
           disabled={saving}
-          className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60"
+          className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60"
         >
           {saving ? t('common_saving') : t('common_save')}
         </button>

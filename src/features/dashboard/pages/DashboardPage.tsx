@@ -120,7 +120,7 @@ export default function DashboardPage() {
               key={tabKey}
               onClick={() => setTab(tabKey)}
               className={`text-xs px-3 py-1.5 rounded-full font-medium transition-colors whitespace-nowrap ${
-                tab === tabKey ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-600'
+                tab === tabKey ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-600'
               }`}
             >
               {tabKey === 'overview'
@@ -250,7 +250,7 @@ export default function DashboardPage() {
           <section>
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-gray-700">{t('dashboard_stock')}</h2>
-              <button onClick={() => navigate('/stock-movements')} className="text-xs text-sky-600 font-medium hover:underline">
+              <button onClick={() => navigate('/stock-movements')} className="text-xs text-brand-600 font-medium hover:underline">
                 {t('dashboard_viewStockHistory')}
               </button>
             </div>
@@ -259,7 +259,7 @@ export default function DashboardPage() {
           <section>
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-gray-700">{t('dashboard_finishedGoods')}</h2>
-              <button onClick={() => navigate('/productions/new')} className="text-xs text-sky-600 font-medium hover:underline">
+              <button onClick={() => navigate('/productions/new')} className="text-xs text-brand-600 font-medium hover:underline">
                 {t('dashboard_logNewProduction')}
               </button>
             </div>
@@ -327,7 +327,7 @@ function TargetsSection({ targets, daily, monthly, token, onSaved, t }: TargetsS
             })
             setEditing(true)
           }}
-          className="text-xs text-sky-600 font-medium hover:underline"
+          className="text-xs text-brand-600 font-medium hover:underline"
         >
           {targets.salesDaily === null && targets.salesMonthly === null
             ? t('dashboard_setTargets')
@@ -348,7 +348,7 @@ function TargetsSection({ targets, daily, monthly, token, onSaved, t }: TargetsS
             <button
               onClick={handleSave}
               disabled={isPending}
-              className="bg-sky-500 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-sky-600 disabled:opacity-40 transition-colors"
+              className="bg-brand-500 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-brand-600 disabled:opacity-40 transition-colors"
             >
               {isPending ? '...' : t('dashboard_saveTargets')}
             </button>
@@ -376,7 +376,7 @@ function TargetInput({ label, value, onChange }: { label: string; value: string;
   return (
     <div>
       <label className="block text-xs text-gray-500 mb-1">{label}</label>
-      <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-sky-300">
+      <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-brand-300">
         <span className="px-2.5 text-xs text-gray-400 bg-gray-50 border-r border-gray-200 py-2">RM</span>
         <input
           type="number"
@@ -414,7 +414,7 @@ function TargetMeter({ label, actual, target, t }: { label: string; actual: numb
       </p>
       <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
         <div
-          className={`h-full rounded-full transition-all ${isOver ? 'bg-emerald-500' : 'bg-sky-500'}`}
+          className={`h-full rounded-full transition-all ${isOver ? 'bg-emerald-500' : 'bg-brand-500'}`}
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -435,7 +435,7 @@ function MetricPair({
   color: 'sky' | 'emerald' | 'violet'
   signed?: boolean
 }) {
-  const colorMap = { sky: 'text-sky-600', emerald: 'text-emerald-600', violet: 'text-violet-600' }
+  const colorMap = { sky: 'text-brand-600', emerald: 'text-emerald-600', violet: 'text-violet-600' }
   const signedColor = signed
     ? monthlyValue >= 0 ? 'text-emerald-600' : 'text-red-600'
     : colorMap[color]
@@ -458,7 +458,7 @@ function MetricPair({
 }
 
 function ValueCard({ label, value, color }: { label: string; value: number; color: 'sky' | 'emerald' }) {
-  const colorClass = color === 'emerald' ? 'text-emerald-600' : 'text-sky-600'
+  const colorClass = color === 'emerald' ? 'text-emerald-600' : 'text-brand-600'
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-5">
       <p className="text-xs text-gray-500 font-medium">{label}</p>
@@ -563,7 +563,7 @@ function MobileOverview({
 
       {/* Daily */}
       <div className="grid grid-cols-2 gap-3">
-        <MobileMetricCard label={t('dashboard_dailySales')} value={`RM ${d.daily.sales.toFixed(2)}`} valueClass="text-sky-600" />
+        <MobileMetricCard label={t('dashboard_dailySales')} value={`RM ${d.daily.sales.toFixed(2)}`} valueClass="text-brand-600" />
         <MobileMetricCard label={t('dashboard_dailyPurchases')} value={`RM ${d.daily.purchases.toFixed(2)}`} valueClass="text-violet-600" />
         <MobileMetricCard
           label={t('dashboard_dailyGrossProfit')}
@@ -579,7 +579,7 @@ function MobileOverview({
 
       {/* Monthly */}
       <div className="grid grid-cols-2 gap-3">
-        <MobileMetricCard label={t('dashboard_monthlySales')} value={`RM ${d.monthly.sales.toFixed(2)}`} valueClass="text-sky-600" />
+        <MobileMetricCard label={t('dashboard_monthlySales')} value={`RM ${d.monthly.sales.toFixed(2)}`} valueClass="text-brand-600" />
         <MobileMetricCard label={t('dashboard_monthlyPurchases')} value={`RM ${d.monthly.purchases.toFixed(2)}`} valueClass="text-violet-600" />
         <MobileMetricCard
           label={t('dashboard_monthlyGrossProfit')}
@@ -592,7 +592,7 @@ function MobileOverview({
       {/* Value cards */}
       <div className="grid grid-cols-2 gap-3">
         <MobileMetricCard label={t('dashboard_readyStockValue')} value={`RM ${d.values.readyStockValue.toFixed(2)}`} valueClass="text-emerald-600" />
-        <MobileMetricCard label={t('dashboard_rawMaterialValue')} value={`RM ${d.values.rawMaterialValue.toFixed(2)}`} valueClass="text-sky-600" />
+        <MobileMetricCard label={t('dashboard_rawMaterialValue')} value={`RM ${d.values.rawMaterialValue.toFixed(2)}`} valueClass="text-brand-600" />
       </div>
     </>
   )
@@ -651,7 +651,7 @@ function StockList({ items, onNavigate, t }: { items: StockItem[]; onNavigate: (
       )}
       {items.length === 0 && <p className="text-sm text-gray-400 text-center py-8">{t('dashboard_noStockRecords')}</p>}
       <Pagination page={page} pageSize={PAGE_SIZE} total={sorted.length} onPageChange={setPage} />
-      <button onClick={onNavigate} className="text-xs text-sky-600 font-medium">{t('dashboard_viewStockHistory')}</button>
+      <button onClick={onNavigate} className="text-xs text-brand-600 font-medium">{t('dashboard_viewStockHistory')}</button>
     </div>
   )
 }
@@ -684,7 +684,7 @@ function FinishedGoodsList({ items, onNavigate, t }: { items: FinishedGoodsItem[
         </ul>
       )}
       <Pagination page={page} pageSize={PAGE_SIZE} total={items.length} onPageChange={setPage} />
-      <button onClick={onNavigate} className="text-xs text-sky-600 font-medium">{t('dashboard_logNewProduction')}</button>
+      <button onClick={onNavigate} className="text-xs text-brand-600 font-medium">{t('dashboard_logNewProduction')}</button>
     </div>
   )
 }

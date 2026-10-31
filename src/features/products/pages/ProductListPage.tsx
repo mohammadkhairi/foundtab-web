@@ -122,7 +122,7 @@ export default function ProductListPage() {
           <button
             data-tour="product-add"
             onClick={() => navigate('/products/new')}
-            className="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center"
             aria-label={t('products_add')}
           >
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -135,7 +135,7 @@ export default function ProductListPage() {
           placeholder={t('products_namePlaceholder')}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </header>
 
@@ -147,12 +147,12 @@ export default function ProductListPage() {
           placeholder={t('products_namePlaceholder')}
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <button
           data-tour="product-add"
           onClick={() => navigate('/products/new')}
-          className="bg-sky-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-sky-600 transition-colors"
+          className="bg-brand-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-brand-600 transition-colors"
         >
           + {t('products_add')}
         </button>

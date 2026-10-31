@@ -146,7 +146,7 @@ export default function RecipeListPage() {
             </button>
             <button
               onClick={() => navigate('/recipes/new')}
-              className="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center"
+              className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center"
             >
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -159,7 +159,7 @@ export default function RecipeListPage() {
           placeholder="Search recipes..."
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </header>
 
@@ -171,7 +171,7 @@ export default function RecipeListPage() {
           placeholder="Search recipes..."
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <button
           onClick={downloadTemplate}
@@ -188,7 +188,7 @@ export default function RecipeListPage() {
         </button>
         <button
           onClick={() => navigate('/recipes/new')}
-          className="bg-sky-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-sky-600 transition-colors whitespace-nowrap"
+          className="bg-brand-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-brand-600 transition-colors whitespace-nowrap"
         >
           + New recipe
         </button>
@@ -231,7 +231,7 @@ export default function RecipeListPage() {
             <button
               key={recipe.id}
               onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
-              className="w-full bg-white rounded-xl border border-gray-100 shadow-card p-4 text-left hover:border-sky-300 transition-colors"
+              className="w-full bg-white rounded-xl border border-gray-100 shadow-card p-4 text-left hover:border-brand-300 transition-colors"
             >
               <p className="text-sm font-semibold text-gray-900">{recipe.name}</p>
               <p className="text-xs text-gray-400 mt-1">
@@ -243,7 +243,7 @@ export default function RecipeListPage() {
           {data && <Pagination page={data.page} pageSize={data.pageSize} total={data.total} onPageChange={setPage} />}
           <button
             onClick={() => navigate('/recipes/new')}
-            className="w-full border-2 border-dashed border-sky-300 rounded-xl py-3 text-sky-600 text-sm font-medium"
+            className="w-full border-2 border-dashed border-brand-300 rounded-xl py-3 text-brand-600 text-sm font-medium"
           >
             + New recipe
           </button>
@@ -284,13 +284,13 @@ export default function RecipeListPage() {
                         {(recipe as any).type === 'YIELD_BREAKDOWN' ? (
                           <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">Yield Breakdown</span>
                         ) : (
-                          <span className="text-xs bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full font-medium">Production</span>
+                          <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium">Production</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums text-gray-600">{recipe.ingredients.length}</td>
                       <td className="px-4 py-3 text-right tabular-nums text-gray-600">{recipe.outputs.length}</td>
                       <td className="px-4 py-3 text-right">
-                        <span className="text-xs text-sky-500 font-medium">Edit</span>
+                        <span className="text-xs text-brand-500 font-medium">Edit</span>
                       </td>
                     </tr>
                   ))}

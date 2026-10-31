@@ -64,7 +64,7 @@ export default function SetupChecklist({ status }: Props) {
             <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">{t('checklist_allDone_desc')}</p>
             <button
               onClick={() => navigate('/help')}
-              className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-sky-600"
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-medium text-brand-600"
             >
               {t('checklist_getHelp')}
               <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -92,7 +92,7 @@ export default function SetupChecklist({ status }: Props) {
       {/* Progress bar */}
       <div className="h-1 bg-gray-100 rounded-full mb-4 overflow-hidden">
         <div
-          className="h-full bg-sky-500 rounded-full transition-all duration-500"
+          className="h-full bg-brand-500 rounded-full transition-all duration-500"
           style={{ width: `${(doneCount / STEPS.length) * 100}%` }}
         />
       </div>
@@ -107,7 +107,7 @@ export default function SetupChecklist({ status }: Props) {
                 done
                   ? 'border-green-500 bg-green-500'
                   : isNext
-                  ? 'border-sky-400 bg-white'
+                  ? 'border-brand-400 bg-white'
                   : 'border-gray-200 bg-white'
               }`}>
                 {done ? (
@@ -115,7 +115,7 @@ export default function SetupChecklist({ status }: Props) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                   </svg>
                 ) : (
-                  <span className={`text-[10px] font-bold ${isNext ? 'text-sky-400' : 'text-gray-300'}`}>{idx + 1}</span>
+                  <span className={`text-[10px] font-bold ${isNext ? 'text-brand-400' : 'text-gray-300'}`}>{idx + 1}</span>
                 )}
               </div>
               <div className="flex-1 min-w-0">
@@ -127,7 +127,7 @@ export default function SetupChecklist({ status }: Props) {
               {!done && isNext && (
                 <button
                   onClick={() => navigate(step.route)}
-                  className="flex-shrink-0 text-xs bg-sky-500 text-white px-3 py-1.5 rounded-lg font-medium"
+                  className="flex-shrink-0 text-xs bg-brand-500 text-white px-3 py-1.5 rounded-lg font-medium"
                 >
                   {step.ctaLabel}
                 </button>

@@ -39,7 +39,7 @@ export default function NotificationSettingsPage() {
             <button
               onClick={() => setLang('en')}
               className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
-                lang === 'en' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-600'
+                lang === 'en' ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-600'
               }`}
             >
               {t('settings_english')}
@@ -47,7 +47,7 @@ export default function NotificationSettingsPage() {
             <button
               onClick={() => setLang('ms')}
               className={`flex-1 py-2 rounded-xl text-sm font-medium transition-colors ${
-                lang === 'ms' ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-600'
+                lang === 'ms' ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-600'
               }`}
             >
               {t('settings_malay')}
@@ -77,7 +77,7 @@ export default function NotificationSettingsPage() {
             <button
               onClick={() => void subscribe()}
               disabled={state === 'requesting'}
-              className="w-full bg-sky-500 text-white font-semibold py-2.5 rounded-xl text-sm disabled:opacity-60"
+              className="w-full bg-brand-500 text-white font-semibold py-2.5 rounded-xl text-sm disabled:opacity-60"
             >
               {state === 'requesting' ? t('settings_requestingPermission') : t('settings_enableNotif')}
             </button>

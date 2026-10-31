@@ -54,7 +54,7 @@ export default function MenuListPage() {
         <h1 className="text-base font-semibold text-gray-900 flex-1">{t('nav_catalogue')}</h1>
         <button
           onClick={() => navigate('/catalogue/new')}
-          className="bg-sky-500 text-white font-semibold px-4 py-1.5 rounded-lg text-sm hover:bg-sky-600 transition-colors"
+          className="bg-brand-500 text-white font-semibold px-4 py-1.5 rounded-lg text-sm hover:bg-brand-600 transition-colors"
         >
           + Add item
         </button>
@@ -68,7 +68,7 @@ export default function MenuListPage() {
               <p className="text-xs text-gray-400 mb-4">Add your product bundles and sets here.</p>
               <button
                 onClick={() => navigate('/catalogue/new')}
-                className="bg-sky-500 text-white font-semibold px-4 py-2 rounded-lg text-sm"
+                className="bg-brand-500 text-white font-semibold px-4 py-2 rounded-lg text-sm"
               >
                 Add first item
               </button>
@@ -78,7 +78,7 @@ export default function MenuListPage() {
               <button
                 key={item.id}
                 onClick={() => navigate(`/catalogue/${item.id}/edit`)}
-                className="w-full bg-white rounded-xl border border-gray-100 shadow-card p-4 text-left hover:border-sky-300 transition-colors"
+                className="w-full bg-white rounded-xl border border-gray-100 shadow-card p-4 text-left hover:border-brand-300 transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div>
@@ -97,7 +97,7 @@ export default function MenuListPage() {
 
           <button
             onClick={() => navigate('/catalogue/new')}
-            className="md:hidden w-full border-2 border-dashed border-sky-300 rounded-xl py-3 text-sky-600 text-sm font-medium"
+            className="md:hidden w-full border-2 border-dashed border-brand-300 rounded-xl py-3 text-brand-600 text-sm font-medium"
           >
             + Add item
           </button>

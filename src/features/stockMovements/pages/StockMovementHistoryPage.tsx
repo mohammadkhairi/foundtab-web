@@ -32,7 +32,7 @@ type ListResponse = {
 
 const TYPE_COLORS: Record<string, string> = {
   PURCHASE: 'text-emerald-600',
-  PRODUCTION_IN: 'text-sky-600',
+  PRODUCTION_IN: 'text-brand-600',
   PRODUCTION_OUT: 'text-amber-600',
   ORDER_OUT: 'text-purple-600',
   MANUAL_ADJUST: 'text-blue-600',
@@ -41,7 +41,7 @@ const TYPE_COLORS: Record<string, string> = {
 
 const TYPE_BG: Record<string, string> = {
   PURCHASE: 'bg-emerald-50 text-emerald-700',
-  PRODUCTION_IN: 'bg-sky-50 text-sky-700',
+  PRODUCTION_IN: 'bg-brand-50 text-brand-700',
   PRODUCTION_OUT: 'bg-amber-50 text-amber-700',
   ORDER_OUT: 'bg-purple-50 text-purple-700',
   MANUAL_ADJUST: 'bg-blue-50 text-blue-700',
@@ -120,7 +120,7 @@ export default function StockMovementHistoryPage() {
               key={f.value}
               onClick={() => { setTypeFilter(f.value); setPage(1) }}
               className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium transition-colors flex-shrink-0 ${
-                typeFilter === f.value ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-600'
+                typeFilter === f.value ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-600'
               }`}
             >
               {f.label}
@@ -132,7 +132,7 @@ export default function StockMovementHistoryPage() {
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Search by name…"
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </header>
 
@@ -145,7 +145,7 @@ export default function StockMovementHistoryPage() {
               key={f.value}
               onClick={() => { setTypeFilter(f.value); setPage(1) }}
               className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors ${
-                typeFilter === f.value ? 'bg-sky-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                typeFilter === f.value ? 'bg-brand-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
               {f.label}
@@ -157,7 +157,7 @@ export default function StockMovementHistoryPage() {
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Search by name…"
-          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </header>
 

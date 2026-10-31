@@ -36,7 +36,7 @@ const STATUS_FLOW: Record<string, string> = {
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING: 'bg-amber-100 text-amber-700',
-  CONFIRMED: 'bg-sky-100 text-sky-700',
+  CONFIRMED: 'bg-brand-100 text-brand-700',
   PROCESSING: 'bg-purple-100 text-purple-700',
   READY: 'bg-emerald-100 text-emerald-700',
   DELIVERED: 'bg-gray-100 text-gray-600',
@@ -127,7 +127,7 @@ export default function OrderDetailPage() {
         <button
           onClick={() => { setStatusError(null); void updateStatus(nextStatus) }}
           disabled={isPending}
-          className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60 hover:bg-sky-600 transition-colors"
+          className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60 hover:bg-brand-600 transition-colors"
         >
           {isPending ? t('orders_updating') : (NEXT_LABELS[order.status] ?? t('orders_statusUpdate'))}
         </button>
@@ -166,7 +166,7 @@ export default function OrderDetailPage() {
           <div className="space-y-1">
             <p className="text-sm font-medium text-gray-900">{order.customerName ?? t('orders_noName')}</p>
             {order.customerPhone && (
-              <a href={`tel:${order.customerPhone}`} className="text-sm text-sky-600">
+              <a href={`tel:${order.customerPhone}`} className="text-sm text-brand-600">
                 {order.customerPhone}
               </a>
             )}
@@ -217,7 +217,7 @@ export default function OrderDetailPage() {
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">{t('orders_customer')}</p>
           <p className="text-sm font-medium text-gray-900">{order.customerName ?? t('orders_noName')}</p>
           {order.customerPhone && (
-            <a href={`tel:${order.customerPhone}`} className="text-sm text-sky-600 mt-0.5 block">
+            <a href={`tel:${order.customerPhone}`} className="text-sm text-brand-600 mt-0.5 block">
               {order.customerPhone}
             </a>
           )}

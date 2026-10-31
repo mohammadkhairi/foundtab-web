@@ -131,14 +131,14 @@ function VariantsSection({ materialId, orgToken }: { materialId: string; orgToke
           value={newVariantName}
           onChange={(e) => setNewVariantName(e.target.value.toUpperCase())}
           placeholder="e.g. CAP SAWAH"
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); void handleAdd() } }}
         />
         <button
           type="button"
           onClick={() => void handleAdd()}
           disabled={adding || !newVariantName.trim()}
-          className="bg-sky-500 text-white text-sm font-medium px-4 py-2 rounded-lg disabled:opacity-50 hover:bg-sky-600 transition-colors"
+          className="bg-brand-500 text-white text-sm font-medium px-4 py-2 rounded-lg disabled:opacity-50 hover:bg-brand-600 transition-colors"
         >
           Add
         </button>
@@ -290,7 +290,7 @@ export default function RawMaterialFormPage() {
           value={form.name}
           onChange={updateField('name')}
           placeholder={t('rawMaterials_namePlaceholder')}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <p className="text-xs text-gray-400 mt-1">{t('rawMaterials_nameHint')}</p>
       </div>
@@ -319,7 +319,7 @@ export default function RawMaterialFormPage() {
           step="any"
           value={form.quantityOnHand}
           onChange={updateField('quantityOnHand')}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <p className="text-xs text-gray-400 mt-1">{t('rawMaterials_quantityHint')}</p>
       </div>
@@ -337,7 +337,7 @@ export default function RawMaterialFormPage() {
           value={form.reorderLevel}
           onChange={updateField('reorderLevel')}
           placeholder={`e.g. 5 ${form.baseUnit}`}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <p className="text-xs text-gray-400 mt-1">{t('rawMaterials_reorderLevelHint')}</p>
       </div>
@@ -355,7 +355,7 @@ export default function RawMaterialFormPage() {
           value={form.unitCost}
           onChange={updateField('unitCost')}
           placeholder="e.g. 2.50"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <p className="text-xs text-gray-400 mt-1">{t('rawMaterials_unitCostHint')}</p>
       </div>
@@ -401,7 +401,7 @@ export default function RawMaterialFormPage() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60"
+            className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60"
           >
             {saving ? t('common_saving') : t('common_save')}
           </button>
@@ -410,7 +410,7 @@ export default function RawMaterialFormPage() {
               <button
                 type="button"
                 onClick={goToHistory}
-                className="w-full text-sky-600 font-medium py-2 text-sm flex items-center justify-center gap-1.5"
+                className="w-full text-brand-600 font-medium py-2 text-sm flex items-center justify-center gap-1.5"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -443,7 +443,7 @@ export default function RawMaterialFormPage() {
                 <button
                   type="button"
                   onClick={goToHistory}
-                  className="text-sky-600 text-sm font-medium hover:text-sky-700 transition-colors flex items-center gap-1.5"
+                  className="text-brand-600 text-sm font-medium hover:text-brand-700 transition-colors flex items-center gap-1.5"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -463,7 +463,7 @@ export default function RawMaterialFormPage() {
             <button
               type="submit"
               disabled={saving}
-              className="bg-sky-500 text-white font-semibold px-6 py-2.5 rounded-lg text-sm hover:bg-sky-600 transition-colors disabled:opacity-60"
+              className="bg-brand-500 text-white font-semibold px-6 py-2.5 rounded-lg text-sm hover:bg-brand-600 transition-colors disabled:opacity-60"
             >
               {saving ? t('common_saving') : t('common_save')}
             </button>

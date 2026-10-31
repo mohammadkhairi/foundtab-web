@@ -130,22 +130,17 @@ export default function DesktopSidebar() {
   ]
 
   return (
-    <aside className="hidden md:flex flex-col w-60 min-h-screen bg-slate-900 border-r border-slate-800 shrink-0">
+    <aside className="hidden md:flex flex-col w-60 min-h-screen bg-brand-950 border-r border-brand-900 shrink-0">
       {/* Logo */}
-      <div className="px-5 py-5 border-b border-slate-800">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center shrink-0">
-            <span className="text-white text-xs font-bold tracking-tight">F</span>
-          </div>
-          <span className="font-semibold text-white text-[15px] tracking-tight">FoundTab</span>
-        </div>
+      <div className="px-5 py-4 border-b border-brand-900">
+        <img src="/logo.png" alt="FoundTab" className="h-8 object-contain" />
       </div>
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
         {NAV_GROUPS.map((group) => (
           <div key={group.label}>
-            <p className="px-3 mb-1.5 text-[10px] font-semibold text-slate-500 uppercase tracking-widest">
+            <p className="px-3 mb-1.5 text-[10px] font-semibold text-brand-700 uppercase tracking-widest">
               {group.label}
             </p>
             <div className="space-y-0.5">
@@ -156,8 +151,8 @@ export default function DesktopSidebar() {
                   className={({ isActive }) =>
                     `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-sky-500 text-white'
-                        : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'
+                        ? 'bg-brand-500 text-white'
+                        : 'text-brand-300 hover:bg-white/5 hover:text-brand-100'
                     }`
                   }
                 >
@@ -171,10 +166,10 @@ export default function DesktopSidebar() {
       </nav>
 
       {/* Sign out */}
-      <div className="px-3 py-4 border-t border-slate-800">
+      <div className="px-3 py-4 border-t border-brand-900">
         <button
           onClick={() => void signOut(() => navigate('/sign-in'))}
-          className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-sm font-medium text-slate-500 hover:bg-white/5 hover:text-slate-300 transition-colors"
+          className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-sm font-medium text-brand-600 hover:bg-white/5 hover:text-brand-400 transition-colors"
         >
           <LogoutIcon />
           {t('auth_signOut')}

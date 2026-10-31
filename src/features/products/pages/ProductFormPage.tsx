@@ -218,7 +218,7 @@ export default function ProductFormPage() {
         type="button"
         onClick={() => fileInputRef.current?.click()}
         disabled={imageUploading}
-        className="relative w-full h-32 border-2 border-dashed border-gray-200 rounded-xl overflow-hidden hover:border-sky-300 transition-colors disabled:opacity-60"
+        className="relative w-full h-32 border-2 border-dashed border-gray-200 rounded-xl overflow-hidden hover:border-brand-300 transition-colors disabled:opacity-60"
       >
         {imagePreview ? (
           <>
@@ -244,7 +244,7 @@ export default function ProductFormPage() {
         )}
         {imageUploading && (
           <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
-            <p className="text-xs text-sky-600 font-medium">Uploading...</p>
+            <p className="text-xs text-brand-600 font-medium">Uploading...</p>
           </div>
         )}
       </button>
@@ -274,7 +274,7 @@ export default function ProductFormPage() {
           value={form.name}
           onChange={updateField('name')}
           placeholder={t('products_namePlaceholder')}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
@@ -288,7 +288,7 @@ export default function ProductFormPage() {
           value={form.sku}
           onChange={updateField('sku')}
           placeholder={t('products_skuPlaceholder')}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
@@ -305,7 +305,7 @@ export default function ProductFormPage() {
           value={form.salePrice}
           onChange={updateField('salePrice')}
           placeholder="e.g. 3.50"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
       </div>
 
@@ -332,7 +332,7 @@ export default function ProductFormPage() {
           value={expiryDurationDays}
           onChange={(e) => setExpiryDurationDays(e.target.value)}
           placeholder="e.g. 3"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
         <p className="text-xs text-gray-400 mt-1">When a production completes, expiry date auto-sets to completion date + this many days.</p>
       </div>
@@ -367,7 +367,7 @@ export default function ProductFormPage() {
         {/* Mobile form */}
         <form onSubmit={handleSubmit} className="md:hidden p-4 space-y-4">
           {fields}
-          <button type="submit" disabled={saving || imageUploading} className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60">
+          <button type="submit" disabled={saving || imageUploading} className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60">
             {submitLabel}
           </button>
           {isEdit && (
@@ -388,7 +388,7 @@ export default function ProductFormPage() {
                 Archive
               </button>
             ) : <div />}
-            <button type="submit" disabled={saving || imageUploading} className="bg-sky-500 text-white font-semibold px-6 py-2.5 rounded-lg text-sm hover:bg-sky-600 transition-colors disabled:opacity-60">
+            <button type="submit" disabled={saving || imageUploading} className="bg-brand-500 text-white font-semibold px-6 py-2.5 rounded-lg text-sm hover:bg-brand-600 transition-colors disabled:opacity-60">
               {submitLabel}
             </button>
           </div>

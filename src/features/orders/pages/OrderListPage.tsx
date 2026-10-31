@@ -30,7 +30,7 @@ type ListResponse = {
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING: 'bg-amber-100 text-amber-700',
-  CONFIRMED: 'bg-sky-100 text-sky-700',
+  CONFIRMED: 'bg-brand-100 text-brand-700',
   PROCESSING: 'bg-purple-100 text-purple-700',
   READY: 'bg-emerald-100 text-emerald-700',
   DELIVERED: 'bg-gray-100 text-gray-600',
@@ -147,7 +147,7 @@ export default function OrderListPage() {
             </button>
             <button
               onClick={() => navigate('/orders/new')}
-              className="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center"
+              className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center"
               aria-label={t('orders_add')}
             >
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -162,7 +162,7 @@ export default function OrderListPage() {
               key={f.value}
               onClick={() => handleFilterChange(f.value)}
               className={`text-xs px-3 py-1.5 rounded-full whitespace-nowrap font-medium transition-colors flex items-center gap-1.5 ${
-                statusFilter === f.value ? 'bg-sky-500 text-white' : 'bg-gray-100 text-gray-600'
+                statusFilter === f.value ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-600'
               }`}
             >
               {f.label}
@@ -187,7 +187,7 @@ export default function OrderListPage() {
               key={f.value}
               onClick={() => handleFilterChange(f.value)}
               className={`text-sm px-3 py-1.5 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                statusFilter === f.value ? 'bg-sky-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                statusFilter === f.value ? 'bg-brand-500 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
               {f.label}
@@ -220,7 +220,7 @@ export default function OrderListPage() {
         </button>
         <button
           onClick={() => navigate('/orders/new')}
-          className="bg-sky-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-sky-600 transition-colors"
+          className="bg-brand-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-brand-600 transition-colors"
         >
           + {t('orders_add')}
         </button>

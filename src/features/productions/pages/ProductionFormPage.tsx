@@ -128,7 +128,7 @@ export default function ProductionFormPage() {
             id="recipe-select"
             value={recipeId}
             onChange={(e) => setRecipeId(e.target.value)}
-            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 bg-white"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white"
           >
             <option value="">{t('productions_selectRecipePlaceholder')}</option>
             {recipes.map((r) => (
@@ -139,11 +139,11 @@ export default function ProductionFormPage() {
       </div>
 
       {selected && selected.outputs.length > 0 && (
-        <div className="bg-sky-50 border border-sky-100 rounded-lg px-3 py-2.5">
-          <p className="text-xs font-medium text-sky-700 mb-1">{t('productions_outputs')}</p>
+        <div className="bg-brand-50 border border-brand-100 rounded-lg px-3 py-2.5">
+          <p className="text-xs font-medium text-brand-700 mb-1">{t('productions_outputs')}</p>
           <ul className="space-y-0.5">
             {selected.outputs.map((o, i) => (
-              <li key={i} className="text-xs text-sky-600">
+              <li key={i} className="text-xs text-brand-600">
                 {parseFloat(o.quantityPerBatch)} {o.unit ?? ''} per batch
               </li>
             ))}
@@ -163,7 +163,7 @@ export default function ProductionFormPage() {
           step="any"
           value={batchCount}
           onChange={(e) => setBatchCount(e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
           data-tour="production-log"
         />
       </div>
@@ -178,7 +178,7 @@ export default function ProductionFormPage() {
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
           placeholder={t('productions_notesPlaceholder')}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
         />
       </div>
 
@@ -188,7 +188,7 @@ export default function ProductionFormPage() {
           type="button"
           onClick={() => void fetchPreview()}
           disabled={previewLoading}
-          className="w-full border border-sky-300 text-sky-600 font-medium py-2.5 rounded-lg text-sm hover:bg-sky-50 transition-colors disabled:opacity-60"
+          className="w-full border border-brand-300 text-brand-600 font-medium py-2.5 rounded-lg text-sm hover:bg-brand-50 transition-colors disabled:opacity-60"
         >
           {previewLoading ? 'Checking stock...' : 'Check stock →'}
         </button>
@@ -273,7 +273,7 @@ export default function ProductionFormPage() {
 
         <form onSubmit={handleSubmit} className="md:hidden p-4 space-y-4">
           {fields}
-          <button type="submit" disabled={saving} className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60">
+          <button type="submit" disabled={saving} className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60">
             {saving ? t('common_saving') : t('productions_add')}
           </button>
         </form>
@@ -283,7 +283,7 @@ export default function ProductionFormPage() {
             {fields}
           </div>
           <div className="px-6 py-4 border-t border-gray-100 flex justify-end">
-            <button type="submit" disabled={saving} className="bg-sky-500 text-white font-semibold px-6 py-2.5 rounded-lg text-sm hover:bg-sky-600 transition-colors disabled:opacity-60">
+            <button type="submit" disabled={saving} className="bg-brand-500 text-white font-semibold px-6 py-2.5 rounded-lg text-sm hover:bg-brand-600 transition-colors disabled:opacity-60">
               {saving ? t('common_saving') : t('productions_add')}
             </button>
           </div>

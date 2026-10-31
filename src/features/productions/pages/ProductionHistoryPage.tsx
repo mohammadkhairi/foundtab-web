@@ -94,7 +94,7 @@ export default function ProductionHistoryPage() {
           </h1>
           <button
             onClick={() => navigate('/productions/new')}
-            className="w-8 h-8 rounded-full bg-sky-500 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center"
             aria-label={t('productions_add')}
           >
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -111,7 +111,7 @@ export default function ProductionHistoryPage() {
         </h1>
         <button
           onClick={() => navigate('/productions/new')}
-          className="bg-sky-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-sky-600 transition-colors"
+          className="bg-brand-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-brand-600 transition-colors"
         >
           + {t('productions_add')}
         </button>

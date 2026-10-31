@@ -110,7 +110,7 @@ export default function WhatsAppOrderPage() {
               onChange={(e) => setMessage(e.target.value)}
               rows={8}
               placeholder={t('orders_whatsappPlaceholder')}
-              className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 resize-none"
+              className="w-full border border-gray-300 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
             />
 
             {error && <p className="text-sm text-red-600">{error}</p>}
@@ -194,7 +194,7 @@ export default function WhatsAppOrderPage() {
               <button
                 onClick={() => void handleConfirm()}
                 disabled={saving}
-                className="flex-1 bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60"
+                className="flex-1 bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60"
               >
                 {saving ? t('common_saving') : t('common_confirm')}
               </button>

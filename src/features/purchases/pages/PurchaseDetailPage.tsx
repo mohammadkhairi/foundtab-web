@@ -211,7 +211,7 @@ export default function PurchaseDetailPage() {
           <button
             onClick={() => void handleSubmit()}
             disabled={submitting}
-            className="w-full bg-sky-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60 hover:bg-sky-600 transition-colors"
+            className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm disabled:opacity-60 hover:bg-brand-600 transition-colors"
           >
             {submitting ? t('common_saving') : t('purchases_submitButton')}
           </button>
