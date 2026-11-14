@@ -290,6 +290,7 @@ export default function ProductFormPage() {
           placeholder={t('products_skuPlaceholder')}
           className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
+        <p className="text-xs text-gray-400 mt-1">Your own reference code — optional. Helps you identify products faster.</p>
       </div>
 
       <div>
@@ -307,6 +308,7 @@ export default function ProductFormPage() {
           placeholder="e.g. 3.50"
           className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
+        <p className="text-xs text-gray-400 mt-1">The price you charge customers per unit. Used as default when creating orders.</p>
       </div>
 
       <div>
@@ -334,7 +336,9 @@ export default function ProductFormPage() {
           placeholder="e.g. 3"
           className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
-        <p className="text-xs text-gray-400 mt-1">When a production completes, expiry date auto-sets to completion date + this many days.</p>
+        <p className="text-xs text-gray-400 mt-1">
+          How many days this product stays fresh after making (e.g., enter 3 if it expires 3 days after production).
+        </p>
       </div>
 
 
@@ -345,7 +349,7 @@ export default function ProductFormPage() {
   const submitLabel = saving ? t('common_saving') : t('common_save')
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-8">
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-gray-500" aria-label={t('common_back')}>

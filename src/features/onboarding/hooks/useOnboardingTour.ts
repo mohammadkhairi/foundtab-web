@@ -1,6 +1,6 @@
 import type { Step } from 'react-joyride'
 
-export type TourModule = 'dashboard' | 'rawMaterials' | 'products' | 'purchases' | 'productions' | 'orders'
+export type TourModule = 'dashboard' | 'rawMaterials' | 'products' | 'purchases' | 'productions' | 'orders' | 'productionTemplates'
 
 const TOUR_STEPS: Record<TourModule, Step[]> = {
   dashboard: [
@@ -84,6 +84,24 @@ const TOUR_STEPS: Record<TourModule, Step[]> = {
       target: '[data-tour="order-list"]',
       title: 'Senarai pesanan',
       content: 'Urus semua pesanan masuk dari sini.',
+    },
+  ],
+  productionTemplates: [
+    {
+      target: '[data-tour="production-plan-list"]',
+      title: 'Production Plans',
+      content: 'Save your batch recipes as a plan — set which recipes to make and how many batches each time.',
+      skipBeacon: true,
+    },
+    {
+      target: '[data-tour="production-plan-schedule"]',
+      title: 'Schedule',
+      content: 'Set how often you run each plan — daily, weekly, or one-off. FoundTab will remind you on the day.',
+    },
+    {
+      target: '[data-tour="production-plan-detail"]',
+      title: 'Run from schedule',
+      content: 'On the schedule tab, hit Run next to any date to log that production run with one tap.',
     },
   ],
 }

@@ -131,7 +131,7 @@ export default function RecipeListPage() {
   const recipes = data?.items ?? []
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-8">
       {/* Mobile header */}
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <div className="flex items-center justify-between mb-2">

@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import RequireAuth from './components/RequireAuth'
 import BottomNav from './components/BottomNav'
 import DesktopSidebar from './components/DesktopSidebar'
+import { useFeatureFlags } from './contexts/FeatureFlagsContext'
 import SignInPage from './features/auth/pages/SignInPage'
 import SignUpPage from './features/auth/pages/SignUpPage'
 import OnboardingFlow, { isOnboardingDone } from './features/onboarding/OnboardingFlow'
@@ -22,6 +23,7 @@ import ProductionFormPage from './features/productions/pages/ProductionFormPage'
 import ProductionHistoryPage from './features/productions/pages/ProductionHistoryPage'
 import ProductionTemplateListPage from './features/productions/pages/ProductionTemplateListPage'
 import ProductionTemplateFormPage from './features/productions/pages/ProductionTemplateFormPage'
+import ProductionTemplateDetailPage from './features/productions/pages/ProductionTemplateDetailPage'
 import OrderListPage from './features/orders/pages/OrderListPage'
 import OrderFormPage from './features/orders/pages/OrderFormPage'
 import OrderDetailPage from './features/orders/pages/OrderDetailPage'
@@ -30,10 +32,22 @@ import StockMovementHistoryPage from './features/stockMovements/pages/StockMovem
 import NotificationSettingsPage from './features/settings/pages/NotificationSettingsPage'
 import DataExportPage from './features/export/pages/DataExportPage'
 import WastagePage from './features/wastage/pages/WastagePage'
+import EventDispatchListPage from './features/eventDispatches/pages/EventDispatchListPage'
+import EventDispatchFormPage from './features/eventDispatches/pages/EventDispatchFormPage'
+import EventDispatchDetailPage from './features/eventDispatches/pages/EventDispatchDetailPage'
+import InvoiceListPage from './features/billing/pages/InvoiceListPage'
+
+function ModuleGate({ moduleKey, children }: { moduleKey: string; children: React.ReactNode }) {
+  const { isAccessible, isLocked, loading } = useFeatureFlags()
+  if (loading) return null
+  if (!isAccessible(moduleKey) && !isLocked(moduleKey)) return <Navigate to="/dashboard" replace />
+  if (isLocked(moduleKey)) return <Navigate to="/billing" replace />
+  return <>{children}</>
+}
 
 function AppShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="md:flex min-h-screen bg-slate-50">
+    <div className="md:flex min-h-screen bg-brand-50">
       <DesktopSidebar />
       <main className="flex-1 min-w-0 pb-20 md:pb-0">
         {children}
@@ -60,8 +74,8 @@ export default function App() {
   return (
     <Routes>
       {/* Auth */}
-      <Route path="/sign-in/*" element={<SignInPage />} />
-      <Route path="/sign-up/*" element={<SignUpPage />} />
+      <Route path="/sign-in" element={<SignInPage />} />
+      <Route path="/sign-up" element={<SignUpPage />} />
 
       {/* Root redirect — protected */}
       <Route path="/" element={<RequireAuth><RootRedirect /></RequireAuth>} />
@@ -70,58 +84,65 @@ export default function App() {
       <Route path="/onboarding" element={<RequireAuth><OnboardingFlow /></RequireAuth>} />
 
       {/* Dashboard */}
-      <Route path="/dashboard" element={<ProtectedShell><DashboardPage /></ProtectedShell>} />
+      <Route path="/dashboard" element={<ProtectedShell><ModuleGate moduleKey="dashboard"><DashboardPage /></ModuleGate></ProtectedShell>} />
 
       {/* Raw materials */}
-      <Route path="/raw-materials" element={<ProtectedShell><RawMaterialListPage /></ProtectedShell>} />
-      <Route path="/raw-materials/new" element={<ProtectedShell><RawMaterialFormPage /></ProtectedShell>} />
-      <Route path="/raw-materials/:id/edit" element={<ProtectedShell><RawMaterialFormPage /></ProtectedShell>} />
+      <Route path="/raw-materials" element={<ProtectedShell><ModuleGate moduleKey="rawMaterials"><RawMaterialListPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/raw-materials/new" element={<ProtectedShell><ModuleGate moduleKey="rawMaterials"><RawMaterialFormPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/raw-materials/:id/edit" element={<ProtectedShell><ModuleGate moduleKey="rawMaterials"><RawMaterialFormPage /></ModuleGate></ProtectedShell>} />
 
       {/* Purchases */}
-      <Route path="/purchases" element={<ProtectedShell><PurchaseListPage /></ProtectedShell>} />
-      <Route path="/purchases/scan" element={<ProtectedShell><OcrReviewPage /></ProtectedShell>} />
-      <Route path="/purchases/new" element={<ProtectedShell><PurchaseFormPage /></ProtectedShell>} />
-      <Route path="/purchases/:id" element={<ProtectedShell><PurchaseDetailPage /></ProtectedShell>} />
+      <Route path="/purchases" element={<ProtectedShell><ModuleGate moduleKey="purchases"><PurchaseListPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/purchases/scan" element={<ProtectedShell><ModuleGate moduleKey="purchases"><OcrReviewPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/purchases/new" element={<ProtectedShell><ModuleGate moduleKey="purchases"><PurchaseFormPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/purchases/:id" element={<ProtectedShell><ModuleGate moduleKey="purchases"><PurchaseDetailPage /></ModuleGate></ProtectedShell>} />
 
       {/* Products */}
-      <Route path="/products" element={<ProtectedShell><ProductListPage /></ProtectedShell>} />
-      <Route path="/products/new" element={<ProtectedShell><ProductFormPage /></ProtectedShell>} />
-      <Route path="/products/:id/edit" element={<ProtectedShell><ProductFormPage /></ProtectedShell>} />
+      <Route path="/products" element={<ProtectedShell><ModuleGate moduleKey="products"><ProductListPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/products/new" element={<ProtectedShell><ModuleGate moduleKey="products"><ProductFormPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/products/:id/edit" element={<ProtectedShell><ModuleGate moduleKey="products"><ProductFormPage /></ModuleGate></ProtectedShell>} />
 
       {/* Recipes */}
-      <Route path="/recipes" element={<ProtectedShell><RecipeListPage /></ProtectedShell>} />
-      <Route path="/recipes/new" element={<ProtectedShell><RecipeFormPage /></ProtectedShell>} />
-      <Route path="/recipes/:id/edit" element={<ProtectedShell><RecipeFormPage /></ProtectedShell>} />
+      <Route path="/recipes" element={<ProtectedShell><ModuleGate moduleKey="recipes"><RecipeListPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/recipes/new" element={<ProtectedShell><ModuleGate moduleKey="recipes"><RecipeFormPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/recipes/:id/edit" element={<ProtectedShell><ModuleGate moduleKey="recipes"><RecipeFormPage /></ModuleGate></ProtectedShell>} />
 
       {/* Catalogue */}
-      <Route path="/catalogue" element={<ProtectedShell><MenuListPage /></ProtectedShell>} />
-      <Route path="/catalogue/new" element={<ProtectedShell><MenuFormPage /></ProtectedShell>} />
-      <Route path="/catalogue/:id/edit" element={<ProtectedShell><MenuFormPage /></ProtectedShell>} />
+      <Route path="/catalogue" element={<ProtectedShell><ModuleGate moduleKey="orders"><MenuListPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/catalogue/new" element={<ProtectedShell><ModuleGate moduleKey="orders"><MenuFormPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/catalogue/:id/edit" element={<ProtectedShell><ModuleGate moduleKey="orders"><MenuFormPage /></ModuleGate></ProtectedShell>} />
 
       {/* Productions */}
-      <Route path="/productions" element={<ProtectedShell><ProductionHistoryPage /></ProtectedShell>} />
-      <Route path="/productions/new" element={<ProtectedShell><ProductionFormPage /></ProtectedShell>} />
-      <Route path="/production-templates" element={<ProtectedShell><ProductionTemplateListPage /></ProtectedShell>} />
-      <Route path="/production-templates/new" element={<ProtectedShell><ProductionTemplateFormPage /></ProtectedShell>} />
-      <Route path="/production-templates/:id/edit" element={<ProtectedShell><ProductionTemplateFormPage /></ProtectedShell>} />
+      <Route path="/productions" element={<ProtectedShell><ModuleGate moduleKey="productions"><ProductionHistoryPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/productions/new" element={<ProtectedShell><ModuleGate moduleKey="productions"><ProductionFormPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/production-templates" element={<ProtectedShell><ModuleGate moduleKey="productions"><ProductionTemplateListPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/production-templates/new" element={<ProtectedShell><ModuleGate moduleKey="productions"><ProductionTemplateFormPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/production-templates/:id/edit" element={<ProtectedShell><ModuleGate moduleKey="productions"><ProductionTemplateFormPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/production-templates/:id" element={<ProtectedShell><ModuleGate moduleKey="productions"><ProductionTemplateDetailPage /></ModuleGate></ProtectedShell>} />
 
       {/* Orders */}
-      <Route path="/orders" element={<ProtectedShell><OrderListPage /></ProtectedShell>} />
-      <Route path="/orders/new" element={<ProtectedShell><OrderFormPage /></ProtectedShell>} />
-      <Route path="/orders/whatsapp" element={<ProtectedShell><WhatsAppOrderPage /></ProtectedShell>} />
-      <Route path="/orders/:id" element={<ProtectedShell><OrderDetailPage /></ProtectedShell>} />
+      <Route path="/orders" element={<ProtectedShell><ModuleGate moduleKey="orders"><OrderListPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/orders/new" element={<ProtectedShell><ModuleGate moduleKey="orders"><OrderFormPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/orders/whatsapp" element={<ProtectedShell><ModuleGate moduleKey="orders"><WhatsAppOrderPage /></ModuleGate></ProtectedShell>} />
+      <Route path="/orders/:id" element={<ProtectedShell><ModuleGate moduleKey="orders"><OrderDetailPage /></ModuleGate></ProtectedShell>} />
 
       {/* Stock movements */}
-      <Route path="/stock-movements" element={<ProtectedShell><StockMovementHistoryPage /></ProtectedShell>} />
+      <Route path="/stock-movements" element={<ProtectedShell><ModuleGate moduleKey="rawMaterials"><StockMovementHistoryPage /></ModuleGate></ProtectedShell>} />
 
       {/* Wastage */}
-      <Route path="/wastage" element={<ProtectedShell><WastagePage /></ProtectedShell>} />
+      <Route path="/wastage" element={<ProtectedShell><ModuleGate moduleKey="wastageReport"><WastagePage /></ModuleGate></ProtectedShell>} />
+
+      {/* Consignments */}
+      <Route path="/consignments" element={<ProtectedShell><EventDispatchListPage /></ProtectedShell>} />
+      <Route path="/consignments/new" element={<ProtectedShell><EventDispatchFormPage /></ProtectedShell>} />
+      <Route path="/consignments/:id" element={<ProtectedShell><EventDispatchDetailPage /></ProtectedShell>} />
 
       {/* Settings */}
       <Route path="/settings/notifications" element={<ProtectedShell><NotificationSettingsPage /></ProtectedShell>} />
 
       {/* Export */}
       <Route path="/export" element={<ProtectedShell><DataExportPage /></ProtectedShell>} />
+      <Route path="/billing" element={<ProtectedShell><InvoiceListPage /></ProtectedShell>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

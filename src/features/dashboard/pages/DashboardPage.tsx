@@ -36,6 +36,9 @@ type ChecklistStatus = {
   hasRawMaterials: boolean
   hasProducts: boolean
   hasRecipes: boolean
+  hasPurchases: boolean
+  hasOrders: boolean
+  hasProductions: boolean
 }
 
 type DashboardTargets = {
@@ -43,12 +46,21 @@ type DashboardTargets = {
   salesMonthly: number | null
   purchasesDaily: number | null
   purchasesMonthly: number | null
+  avgCheck: number | null
+}
+
+type AvgCheck = {
+  perOrder: number | null
+  perCover: number | null
+  monthlyOrderCount: number
+  monthlyCoversTotal: number
 }
 
 type DashboardResponse = {
   daily: { sales: number; purchases: number; grossProfit: number }
   monthly: { sales: number; purchases: number; grossProfit: number; totalOrders: number; pendingOrders: number; grossMargin: number }
   values: { readyStockValue: number; rawMaterialValue: number }
+  avgCheck: AvgCheck
   targets: DashboardTargets
   stock: StockItem[]
   finishedGoods: FinishedGoodsItem[]
@@ -62,11 +74,12 @@ const EMPTY_DATA: DashboardResponse = {
   daily: { sales: 0, purchases: 0, grossProfit: 0 },
   monthly: { sales: 0, purchases: 0, grossProfit: 0, totalOrders: 0, pendingOrders: 0, grossMargin: 0 },
   values: { readyStockValue: 0, rawMaterialValue: 0 },
-  targets: { salesDaily: null, salesMonthly: null, purchasesDaily: null, purchasesMonthly: null },
+  avgCheck: { perOrder: null, perCover: null, monthlyOrderCount: 0, monthlyCoversTotal: 0 },
+  targets: { salesDaily: null, salesMonthly: null, purchasesDaily: null, purchasesMonthly: null, avgCheck: null },
   stock: [],
   finishedGoods: [],
   showChecklist: false,
-  checklistStatus: { hasRawMaterials: false, hasProducts: false, hasRecipes: false },
+  checklistStatus: { hasRawMaterials: false, hasProducts: false, hasRecipes: false, hasPurchases: false, hasOrders: false, hasProductions: false },
 }
 
 export default function DashboardPage() {
@@ -95,7 +108,7 @@ export default function DashboardPage() {
   if (isError) return <ErrorState onRetry={() => void refetch()} />
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-0">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-0">
       <Joyride steps={steps} run={shouldRun} continuous onEvent={handleTourCallback} />
 
       {/* Mobile header */}
@@ -235,6 +248,34 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* Row 2b: Average Check */}
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <p className="text-xs text-gray-500 font-medium">{t('dashboard_avgCheck')}</p>
+            <p className="text-2xl font-bold mt-1.5 text-brand-700">
+              {d.avgCheck.perOrder !== null ? `RM ${d.avgCheck.perOrder.toFixed(2)}` : '—'}
+            </p>
+            <p className="text-xs text-gray-400 mt-0.5">{t('dashboard_avgCheckDesc')}</p>
+            {d.targets.avgCheck !== null && d.avgCheck.perOrder !== null && (
+              <p className={`text-xs font-medium mt-1 ${d.avgCheck.perOrder >= d.targets.avgCheck ? 'text-emerald-600' : 'text-amber-600'}`}>
+                {t('dashboard_target')}: RM {d.targets.avgCheck.toFixed(2)}
+              </p>
+            )}
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <p className="text-xs text-gray-500 font-medium">{t('dashboard_avgPerCover')}</p>
+            <p className="text-2xl font-bold mt-1.5 text-brand-700">
+              {d.avgCheck.perCover !== null ? `RM ${d.avgCheck.perCover.toFixed(2)}` : '—'}
+            </p>
+            <p className="text-xs text-gray-400 mt-0.5">{t('dashboard_avgPerCoverDesc')}</p>
+          </div>
+          <div className="bg-white rounded-xl border border-gray-200 p-5">
+            <p className="text-xs text-gray-500 font-medium">{t('dashboard_coversThisMonth')}</p>
+            <p className="text-2xl font-bold mt-1.5 text-gray-900">{d.avgCheck.monthlyCoversTotal || '—'}</p>
+            <p className="text-xs text-gray-400 mt-0.5">{d.avgCheck.monthlyOrderCount} {t('dashboard_orders')}</p>
+          </div>
+        </div>
+
         {/* Row 3: Targets */}
         <TargetsSection
           targets={d.targets}
@@ -289,6 +330,7 @@ function TargetsSection({ targets, daily, monthly, token, onSaved, t }: TargetsS
     salesMonthly: targets.salesMonthly !== null ? String(targets.salesMonthly) : '',
     purchasesDaily: targets.purchasesDaily !== null ? String(targets.purchasesDaily) : '',
     purchasesMonthly: targets.purchasesMonthly !== null ? String(targets.purchasesMonthly) : '',
+    avgCheck: targets.avgCheck !== null ? String(targets.avgCheck) : '',
   })
 
   const { mutate, isPending, error } = useMutation({
@@ -310,6 +352,7 @@ function TargetsSection({ targets, daily, monthly, token, onSaved, t }: TargetsS
       salesMonthly: form.salesMonthly ? parseFloat(form.salesMonthly) : null,
       purchasesDaily: form.purchasesDaily ? parseFloat(form.purchasesDaily) : null,
       purchasesMonthly: form.purchasesMonthly ? parseFloat(form.purchasesMonthly) : null,
+      avgCheck: form.avgCheck ? parseFloat(form.avgCheck) : null,
     })
   }
 
@@ -324,6 +367,7 @@ function TargetsSection({ targets, daily, monthly, token, onSaved, t }: TargetsS
               salesMonthly: targets.salesMonthly !== null ? String(targets.salesMonthly) : '',
               purchasesDaily: targets.purchasesDaily !== null ? String(targets.purchasesDaily) : '',
               purchasesMonthly: targets.purchasesMonthly !== null ? String(targets.purchasesMonthly) : '',
+              avgCheck: targets.avgCheck !== null ? String(targets.avgCheck) : '',
             })
             setEditing(true)
           }}
@@ -342,6 +386,7 @@ function TargetsSection({ targets, daily, monthly, token, onSaved, t }: TargetsS
             <TargetInput label={t('dashboard_salesMonthlyTarget')} value={form.salesMonthly} onChange={(v) => setForm((f) => ({ ...f, salesMonthly: v }))} />
             <TargetInput label={t('dashboard_purchasesDailyTarget')} value={form.purchasesDaily} onChange={(v) => setForm((f) => ({ ...f, purchasesDaily: v }))} />
             <TargetInput label={t('dashboard_purchasesMonthlyTarget')} value={form.purchasesMonthly} onChange={(v) => setForm((f) => ({ ...f, purchasesMonthly: v }))} />
+            <TargetInput label={t('dashboard_avgCheckTarget')} value={form.avgCheck} onChange={(v) => setForm((f) => ({ ...f, avgCheck: v }))} />
           </div>
           {error && <p className="text-xs text-red-600">Failed to save targets.</p>}
           <div className="flex gap-3">

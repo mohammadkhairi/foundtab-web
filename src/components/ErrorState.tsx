@@ -15,7 +15,13 @@ export default function ErrorState({ message, onRetry }: ErrorStateProps) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z" />
         </svg>
       </div>
-      <p className="text-sm text-gray-600 mb-4">{message ?? t('common_errorGeneric')}</p>
+      <p className="text-sm text-gray-600 mb-1">{message ?? t('common_errorGeneric')}</p>
+      {!message && (
+        <p className="text-xs text-gray-400 mb-4">
+          Check your internet connection and try again. If the problem continues, refresh the page.
+        </p>
+      )}
+      {message && <div className="mb-4" />}
       {onRetry && (
         <button
           onClick={onRetry}

@@ -45,7 +45,7 @@ export default function MenuListPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-8">
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <h1 className="text-base font-semibold text-gray-900">{t('nav_catalogue')}</h1>
       </header>
@@ -61,6 +61,11 @@ export default function MenuListPage() {
       </header>
 
       <div className="md:px-6 md:py-5">
+        {items.length > 0 && (
+          <p className="text-xs text-gray-500 px-4 pb-2 md:px-0 md:pb-3">
+            Bundles and sets you sell together (e.g., "Gift Box" = 3 Cookies + 1 Card). Link these when creating orders.
+          </p>
+        )}
         <div className="p-4 md:p-0 space-y-3">
           {items.length === 0 ? (
             <div className="bg-white rounded-xl border-2 border-dashed border-gray-200 p-10 text-center">

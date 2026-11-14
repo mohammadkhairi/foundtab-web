@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../hooks/useAuth'
 import { apiFetch, ApiError } from '../../../lib/api'
@@ -38,7 +38,6 @@ type RawMaterial = { id: string; name: string; baseUnit: string }
 
 type Phase = 'upload' | 'summary' | 'review' | 'confirm' | 'saving'
 
-const DRAFT_KEY = 'foundtab_ocr_draft'
 const MAPPING_KEY = 'foundtab_receipt_mappings'
 
 const FEE_KEYWORDS = ['gst', 'sst', 'service charge', 'discount', 'rounding', 'fee', 'tax', 'charge']
@@ -72,6 +71,8 @@ function isFeeItem(itemName: string): boolean {
   return FEE_KEYWORDS.some((kw) => lower.includes(kw))
 }
 
+type ManualItem = { name: string; materialId: string | null; quantity: string; unit: string }
+
 export default function OcrReviewPage() {
   const navigate = useNavigate()
   const { refreshToken } = useAuth()
@@ -92,55 +93,53 @@ export default function OcrReviewPage() {
   const [variantInputs, setVariantInputs] = useState<Record<number, string>>({})
   const [error, setError] = useState<string | null>(null)
   const [materials, setMaterials] = useState<RawMaterial[]>([])
+  const [addingManualItem, setAddingManualItem] = useState(false)
+  const [manualItem, setManualItem] = useState<ManualItem>({ name: '', materialId: null, quantity: '', unit: '' })
+  const draftSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Restore in-progress draft from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem(DRAFT_KEY)
-    if (!saved) return
-    try {
-      const draft = JSON.parse(saved) as {
-        phase: Phase
-        fields: FieldState
-        reviewItems: ReviewItem[]
-        reviewIdx: number
-        rejectedSuggestions: number[]
-        trackingIdx: number | null
-      }
-      if (!draft.phase || draft.phase === 'upload' || draft.phase === 'saving') return
-      setPhase(draft.phase)
-      setFields(draft.fields)
-      setReviewItems(draft.reviewItems)
-      setReviewIdx(draft.reviewIdx ?? 0)
-      setRejectedSuggestions(new Set(draft.rejectedSuggestions ?? []))
-      setTrackingIdx(draft.trackingIdx ?? null)
-    } catch {
-      localStorage.removeItem(DRAFT_KEY)
-    }
+  const saveDraftToDb = useCallback((draft: object, tok: string) => {
+    if (draftSaveTimerRef.current) clearTimeout(draftSaveTimerRef.current)
+    draftSaveTimerRef.current = setTimeout(() => {
+      void apiFetch('/api/v1/purchases/ocr-draft', { method: 'PUT', body: JSON.stringify(draft), token: tok })
+    }, 800)
   }, [])
 
-  // Save draft to localStorage whenever in-progress state changes
+  // Restore in-progress draft from DB on mount
+  useEffect(() => {
+    refreshToken().then(async (tok) => {
+      if (!tok) return
+      const [draftData, materialsRes] = await Promise.all([
+        apiFetch<{ phase: Phase; fields: FieldState; reviewItems: ReviewItem[]; reviewIdx: number; rejectedSuggestions: number[]; trackingIdx: number | null } | null>(
+          '/api/v1/purchases/ocr-draft', { token: tok }
+        ).catch(() => null),
+        apiFetch<{ items: RawMaterial[] }>('/api/v1/raw-materials', { token: tok }).catch(() => ({ items: [] })),
+      ])
+      setMaterials(materialsRes.items ?? [])
+      if (!draftData || draftData.phase === 'upload' || draftData.phase === 'saving') return
+      setPhase(draftData.phase)
+      setFields(draftData.fields)
+      setReviewItems(draftData.reviewItems)
+      setReviewIdx(draftData.reviewIdx ?? 0)
+      setRejectedSuggestions(new Set(draftData.rejectedSuggestions ?? []))
+      setTrackingIdx(draftData.trackingIdx ?? null)
+    })
+  }, [])
+
+  // Save draft to DB whenever in-progress state changes (debounced)
   useEffect(() => {
     if (phase === 'upload' || phase === 'saving') return
-    try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({
+    refreshToken().then((tok) => {
+      if (!tok) return
+      saveDraftToDb({
         phase,
         fields,
         reviewItems,
         reviewIdx,
         rejectedSuggestions: [...rejectedSuggestions],
         trackingIdx,
-      }))
-    } catch {}
-  }, [phase, fields, reviewItems, reviewIdx, rejectedSuggestions, trackingIdx])
-
-  useEffect(() => {
-    refreshToken().then((tok) => {
-      if (!tok) return
-      apiFetch<{ items: RawMaterial[] }>('/api/v1/raw-materials', { token: tok })
-        .then((res) => setMaterials(res.items ?? []))
-        .catch(() => {})
+      }, tok)
     })
-  }, [])
+  }, [phase, fields, reviewItems, reviewIdx, rejectedSuggestions, trackingIdx])
 
   // Derived item categories
   const feeItems = reviewItems.filter((i) => isFeeItem(i.itemName))
@@ -158,7 +157,9 @@ export default function OcrReviewPage() {
   )
 
   function discardDraft() {
-    localStorage.removeItem(DRAFT_KEY)
+    refreshToken().then((tok) => {
+      if (tok) void apiFetch('/api/v1/purchases/ocr-draft', { method: 'DELETE', token: tok })
+    })
     setPhase('upload')
     setFields({ supplierName: '', receiptDate: '', totalAmount: '' })
     setReviewItems([])
@@ -478,7 +479,7 @@ export default function OcrReviewPage() {
           } catch { /* non-fatal */ }
         }
       }
-      localStorage.removeItem(DRAFT_KEY)
+      void apiFetch('/api/v1/purchases/ocr-draft', { method: 'DELETE', token: freshToken })
       navigate('/purchases')
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('purchases_saveError'))
@@ -498,7 +499,7 @@ export default function OcrReviewPage() {
   )
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-8 flex flex-col">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-8 flex flex-col">
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <div className="flex items-center gap-3">
           {backButton}
@@ -1072,11 +1073,104 @@ export default function OcrReviewPage() {
                 })}
               </div>
             )}
-            {confirmedItems.length === 0 && (
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 text-center">
+            {confirmedItems.length === 0 && !addingManualItem && (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 text-center space-y-3">
                 <p className="text-sm text-gray-400">No items to save.</p>
+                <button
+                  type="button"
+                  onClick={discardDraft}
+                  className="inline-flex items-center gap-2 text-sm font-medium text-brand-600 hover:text-brand-700 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Scan receipt again
+                </button>
               </div>
             )}
+
+            {/* Add manual item panel */}
+            {addingManualItem ? (
+              <div className="bg-white rounded-2xl border border-brand-200 shadow-card p-4 space-y-3">
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Add item manually</p>
+                <SearchableSelect
+                  value={manualItem.materialId ?? '__new__'}
+                  onChange={(id, typedName) => {
+                    if (id === '__new__') {
+                      setManualItem((m) => ({ ...m, materialId: null, name: typedName?.trim().toUpperCase() ?? '' }))
+                    } else {
+                      const mat = materials.find((x) => x.id === id)
+                      setManualItem((m) => ({ ...m, materialId: id, name: mat?.name ?? '' }))
+                    }
+                  }}
+                  options={materials.map((m) => ({ id: m.id, label: m.name, sublabel: m.baseUnit }))}
+                  createOption={{ id: '__new__', label: (q) => q ? `Add as new: "${q.toUpperCase()}"` : 'Add as new item' }}
+                  placeholder="Material name…"
+                  searchPlaceholder="Search or type a name…"
+                />
+                <div className="flex gap-2">
+                  <input
+                    type="number" inputMode="decimal" min="0" step="any"
+                    value={manualItem.quantity}
+                    onChange={(e) => setManualItem((m) => ({ ...m, quantity: e.target.value }))}
+                    placeholder="Qty"
+                    className="w-20 border border-gray-300 rounded-lg px-2 py-2 text-sm text-center focus:outline-none focus:ring-1 focus:ring-brand-400"
+                  />
+                  <div className="flex-1">
+                    <UnitSelect value={manualItem.unit} onChange={(u) => setManualItem((m) => ({ ...m, unit: u }))} />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const name = manualItem.name.trim().toUpperCase()
+                      const qty = parseFloat(manualItem.quantity)
+                      if (!name || !qty || qty <= 0 || !manualItem.unit) return
+                      const newItem: ReviewItem = {
+                        itemName: name,
+                        quantity: qty,
+                        unit: manualItem.unit,
+                        unitPrice: null,
+                        totalPrice: null,
+                        suggestedRawMaterialId: manualItem.materialId,
+                        suggestedGenericName: name,
+                        mappedMaterialId: manualItem.materialId,
+                        mappedMaterialName: name,
+                        deleted: false,
+                        skipped: false,
+                        showPicker: false,
+                        pendingVariantNames: [],
+                        splits: [],
+                      }
+                      setReviewItems((prev) => [...prev, newItem])
+                      setManualItem({ name: '', materialId: null, quantity: '', unit: '' })
+                      setAddingManualItem(false)
+                    }}
+                    className="flex-1 bg-brand-500 text-white font-semibold py-2 rounded-xl text-sm"
+                  >
+                    Add
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { setAddingManualItem(false); setManualItem({ name: '', materialId: null, quantity: '', unit: '' }) }}
+                    className="px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 rounded-xl transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAddingManualItem(true)}
+                className="w-full border border-dashed border-gray-300 rounded-xl py-2.5 text-sm text-brand-600 font-medium hover:border-brand-400 hover:bg-brand-50 transition-colors"
+              >
+                + Add item manually
+              </button>
+            )}
+
             {error && <p className="text-sm text-red-600">{error}</p>}
             <button
               onClick={() => void handleConfirm()}

@@ -70,7 +70,7 @@ export default function DataExportPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20">
+    <div className="min-h-screen bg-brand-50 pb-20">
       <header className="bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-gray-500" aria-label={t('common_back')}>

@@ -107,7 +107,7 @@ export default function ProductListPage() {
   const items = data?.items ?? []
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-6">
       <Joyride
         steps={steps}
         run={shouldRun}

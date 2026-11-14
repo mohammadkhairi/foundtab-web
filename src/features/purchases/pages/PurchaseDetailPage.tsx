@@ -95,7 +95,7 @@ export default function PurchaseDetailPage() {
   const isDraft = purchase.status === 'DRAFT' || purchase.status === 'OCR_DRAFT'
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-32">
+    <div className="min-h-screen bg-brand-50 pb-32">
       {/* Mobile header */}
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <div className="flex items-center gap-3">
@@ -207,7 +207,7 @@ export default function PurchaseDetailPage() {
 
       {/* Action bar */}
       {isDraft && (
-        <div className="fixed bottom-0 left-0 right-0 md:static md:mt-4 md:max-w-4xl md:mx-0 md:px-8 bg-white border-t border-gray-200 md:border-0 md:bg-transparent p-4 space-y-2 md:pb-8">
+        <div className="fixed bottom-0 left-0 right-0 md:static md:mt-4 md:max-w-4xl md:mx-0 md:px-8 z-30 md:z-auto bg-white border-t border-gray-200 md:border-0 md:bg-transparent p-4 space-y-2 md:pb-8">
           <button
             onClick={() => void handleSubmit()}
             disabled={submitting}

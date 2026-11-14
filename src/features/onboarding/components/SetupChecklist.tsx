@@ -5,6 +5,9 @@ type ChecklistStatus = {
   hasRawMaterials: boolean
   hasProducts: boolean
   hasRecipes: boolean
+  hasPurchases: boolean
+  hasOrders: boolean
+  hasProductions: boolean
 }
 
 type Props = {
@@ -43,6 +46,27 @@ export default function SetupChecklist({ status }: Props) {
       label: t('checklist_step_recipe'),
       description: t('checklist_step_recipe_desc'),
       route: '/recipes/new',
+      ctaLabel: t('checklist_start'),
+    },
+    {
+      key: 'hasPurchases',
+      label: t('checklist_step_purchase'),
+      description: t('checklist_step_purchase_desc'),
+      route: '/purchases/new',
+      ctaLabel: t('checklist_start'),
+    },
+    {
+      key: 'hasOrders',
+      label: t('checklist_step_order'),
+      description: t('checklist_step_order_desc'),
+      route: '/orders/new',
+      ctaLabel: t('checklist_start'),
+    },
+    {
+      key: 'hasProductions',
+      label: t('checklist_step_production'),
+      description: t('checklist_step_production_desc'),
+      route: '/productions/new',
       ctaLabel: t('checklist_start'),
     },
   ]
@@ -100,6 +124,7 @@ export default function SetupChecklist({ status }: Props) {
       <ul className="space-y-3">
         {STEPS.map((step, idx) => {
           const done = status[step.key]
+          // "next" = first incomplete step after all prior steps are done
           const isNext = !done && STEPS.slice(0, idx).every((s) => status[s.key])
           return (
             <li key={step.key} className={`flex items-start gap-3 ${done ? 'opacity-50' : ''}`}>

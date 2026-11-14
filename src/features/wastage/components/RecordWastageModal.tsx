@@ -124,6 +124,10 @@ export default function RecordWastageModal({ preselectedProduct, onClose, onSucc
         </div>
 
         <form onSubmit={(e) => void handleSubmit(e)} className="p-5 space-y-4">
+          <p className="text-sm text-gray-500 bg-gray-50 rounded-lg px-3 py-2.5">
+            Use this to track items you can't sell — expired, spoiled, or damaged. Recording a loss keeps your stock count accurate.
+          </p>
+
           {/* Entity type — only shown when no preselected product */}
           {!preselectedProduct && (
             <div>
@@ -210,16 +214,23 @@ export default function RecordWastageModal({ preselectedProduct, onClose, onSucc
             <label className="block text-sm font-medium text-gray-700 mb-1.5">{t('wastage_reason')}</label>
             <div className="space-y-2">
               {WASTAGE_REASONS.map((r) => (
-                <label key={r} className="flex items-center gap-2 cursor-pointer">
+                <label key={r} className="flex items-start gap-2 cursor-pointer">
                   <input
                     type="radio"
                     name="reason"
                     value={r}
                     checked={reason === r}
                     onChange={() => setReason(r)}
-                    className="text-brand-500 focus:ring-brand-500"
+                    className="text-brand-500 focus:ring-brand-500 mt-0.5"
                   />
-                  <span className="text-sm text-gray-700">{reasonLabel(r)}</span>
+                  <div>
+                    <span className="text-sm font-medium text-gray-800">{reasonLabel(r)}</span>
+                    <span className="text-xs text-gray-400 block">
+                      {r === 'EXPIRED' && 'Past its use-by date'}
+                      {r === 'DAMAGED' && 'Dropped, broken, or defective'}
+                      {r === 'OTHER' && 'Spilled, lost, or any other reason'}
+                    </span>
+                  </div>
                 </label>
               ))}
             </div>

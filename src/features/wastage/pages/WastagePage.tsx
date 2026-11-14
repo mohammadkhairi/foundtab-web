@@ -84,7 +84,7 @@ export default function WastagePage() {
   const expiredPct = totalEntries > 0 ? Math.round((totalExpired / totalEntries) * 100) : 0
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-6">
       {/* Mobile header */}
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <div className="flex items-center justify-between">
@@ -102,21 +102,19 @@ export default function WastagePage() {
       </header>
 
       {/* Desktop header */}
-      <div className="hidden md:block px-6 py-5">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-semibold text-gray-900">{t('wastage_title')}</h1>
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-brand-500 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-brand-600 transition-colors"
-          >
-            + {t('wastage_recordWastage')}
-          </button>
-        </div>
-      </div>
+      <header className="hidden md:flex items-center gap-3 bg-white border-b border-gray-200 px-6 h-14 sticky top-0 z-10">
+        <h1 className="text-base font-semibold text-gray-900 flex-1">{t('wastage_title')}</h1>
+        <button
+          onClick={() => setShowModal(true)}
+          className="bg-brand-500 hover:bg-brand-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+        >
+          + {t('wastage_recordWastage')}
+        </button>
+      </header>
 
       {/* Stats row */}
       {!statsLoading && stats && (
-        <div className="px-4 md:px-6 mb-4">
+        <div className="px-4 md:px-6 pt-4 md:pt-6 mb-4">
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
             <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">{t('wastage_statsLast30Days')}</p>
             <div className="flex flex-wrap gap-4 text-sm">

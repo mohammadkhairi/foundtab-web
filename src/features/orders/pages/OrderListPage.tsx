@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { ApiError } from '../../../lib/api'
 import { Joyride, type EventData, STATUS } from 'react-joyride'
 import { useAuth } from '../../../hooks/useAuth'
 import { apiFetch } from '../../../lib/api'
@@ -17,7 +18,9 @@ type Order = {
   customerName: string | null
   customerPhone: string | null
   status: string
+  fulfillmentType: 'STOCK' | 'PRODUCE'
   totalAmount: string | null
+  fulfillmentDate: string | null
   createdAt: string
 }
 
@@ -46,6 +49,18 @@ export default function OrderListPage() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [page, setPage] = useState(1)
   const [downloading, setDownloading] = useState(false)
+  const [releasing, setReleasing] = useState(false)
+
+  async function handleReleaseDevice() {
+    setReleasing(true)
+    try {
+      const freshToken = await refreshToken()
+      await apiFetch('/api/v1/auth/release-device', { method: 'POST', token: freshToken ?? undefined })
+      void refetch()
+    } finally {
+      setReleasing(false)
+    }
+  }
 
   async function handleDownloadTemplate() {
     const freshToken = await refreshToken()
@@ -93,7 +108,7 @@ export default function OrderListPage() {
     { value: 'all', label: t('orders_filterAll'), count: counts?.all },
   ]
 
-  const { data, isLoading, isError, refetch } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['orders', statusFilter, page],
     queryFn: () => {
       const params = new URLSearchParams()
@@ -111,9 +126,23 @@ export default function OrderListPage() {
   }
 
   const items = data?.items ?? []
+  const isDeviceLimit = isError && error instanceof ApiError && error.code === 'DEVICE_LIMIT_EXCEEDED'
+
+  const deviceLimitBanner = (
+    <div className="rounded-xl border border-orange-200 bg-orange-50 p-4 space-y-2">
+      <p className="text-sm font-medium text-orange-800">{error instanceof ApiError ? error.message : ''}</p>
+      <button
+        onClick={() => void handleReleaseDevice()}
+        disabled={releasing}
+        className="text-xs font-semibold text-white bg-orange-500 hover:bg-orange-600 disabled:opacity-50 px-3 py-1.5 rounded-lg transition-colors"
+      >
+        {releasing ? '...' : 'Release other device'}
+      </button>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-6">
       <Joyride
         steps={steps}
         run={shouldRun}
@@ -226,10 +255,21 @@ export default function OrderListPage() {
         </button>
       </header>
 
+      {/* Mobile filter hint */}
+      <p className="text-xs text-gray-400 px-4 pb-2 md:hidden">
+        {statusFilter === 'preparing'
+          ? 'Orders that are confirmed and being prepared'
+          : statusFilter === 'all'
+            ? 'All orders including delivered and cancelled'
+            : statusFilter === 'DELIVERED'
+              ? 'Orders that have been delivered to customers'
+              : 'Orders waiting for action — not yet delivered'}
+      </p>
+
       {/* Mobile list */}
       <div className="p-4 md:hidden">
         {isLoading && <LoadingSpinner />}
-        {isError && <ErrorState onRetry={() => void refetch()} />}
+        {isError && (isDeviceLimit ? deviceLimitBanner : <ErrorState onRetry={() => void refetch()} />)}
         {!isLoading && !isError && !items.length && (
           <EmptyState
             title={t('orders_emptyTitle')}
@@ -255,11 +295,27 @@ export default function OrderListPage() {
                         {order.customerPhone && (
                           <p className="text-xs text-gray-400">{order.customerPhone}</p>
                         )}
+                        {order.fulfillmentDate && (
+                          <p className="text-xs text-blue-600 mt-0.5">Due: {order.fulfillmentDate}</p>
+                        )}
+                        {order.fulfillmentType === 'PRODUCE' && order.status !== 'CANCELLED' && order.status !== 'DELIVERED' && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); navigate(`/productions/new?fromOrderId=${order.id}`) }}
+                            className="text-xs font-semibold text-purple-600 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full mt-0.5 hover:bg-purple-100 transition-colors"
+                          >
+                            + Make items
+                          </button>
+                        )}
                       </div>
                       <div className="flex flex-col items-end gap-1">
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}>
-                          {STATUS_LABELS[order.status] ?? order.status}
-                        </span>
+                        <div className="flex items-center gap-1">
+                          {order.fulfillmentType === 'PRODUCE' && (
+                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">Produce</span>
+                          )}
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                            {STATUS_LABELS[order.status] ?? order.status}
+                          </span>
+                        </div>
                         {order.totalAmount !== null && (
                           <p className="text-xs font-semibold text-gray-800">RM {parseFloat(order.totalAmount).toFixed(2)}</p>
                         )}
@@ -277,7 +333,7 @@ export default function OrderListPage() {
       {/* Desktop table */}
       <div className="hidden md:block px-6 py-5">
         {isLoading && <LoadingSpinner />}
-        {isError && <ErrorState onRetry={() => void refetch()} />}
+        {isError && (isDeviceLimit ? deviceLimitBanner : <ErrorState onRetry={() => void refetch()} />)}
         {!isLoading && !isError && !items.length && (
           <EmptyState
             title={t('orders_emptyTitle')}
@@ -310,11 +366,19 @@ export default function OrderListPage() {
                         {order.customerPhone && (
                           <p className="text-xs text-gray-400">{order.customerPhone}</p>
                         )}
+                        {order.fulfillmentDate && (
+                          <p className="text-xs text-blue-600">Due: {order.fulfillmentDate}</p>
+                        )}
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}>
-                          {STATUS_LABELS[order.status] ?? order.status}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          {order.fulfillmentType === 'PRODUCE' && (
+                            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">Produce</span>
+                          )}
+                          <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_COLORS[order.status] ?? 'bg-gray-100 text-gray-600'}`}>
+                            {STATUS_LABELS[order.status] ?? order.status}
+                          </span>
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums font-semibold text-gray-900">
                         {order.totalAmount !== null ? `RM ${parseFloat(order.totalAmount).toFixed(2)}` : '—'}

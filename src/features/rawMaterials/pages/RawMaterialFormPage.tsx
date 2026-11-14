@@ -97,7 +97,9 @@ function VariantsSection({ materialId, orgToken }: { materialId: string; orgToke
   return (
     <div className="space-y-2">
       <p className="text-sm font-medium text-gray-700">Brands / Variants</p>
-      <p className="text-xs text-gray-400">Different brands you purchase under this material (e.g. Cap Sawah, Cap Layar)</p>
+      <p className="text-xs text-gray-500 mb-2">
+        Optional: If you buy the same ingredient from different brands (e.g., "Cap Sawah" vs "Gold Medal" flour), add them here to track each separately.
+      </p>
 
       {isLoading && <div className="h-8 bg-gray-100 rounded animate-pulse" />}
 
@@ -339,7 +341,7 @@ export default function RawMaterialFormPage() {
           placeholder={`e.g. 5 ${form.baseUnit}`}
           className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
-        <p className="text-xs text-gray-400 mt-1">{t('rawMaterials_reorderLevelHint')}</p>
+        <p className="text-xs text-gray-400 mt-1">You'll get a dashboard warning when this ingredient drops below this amount. Leave blank to skip alerts.</p>
       </div>
 
       <div>
@@ -365,7 +367,7 @@ export default function RawMaterialFormPage() {
   )
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-8">
       {/* Mobile sticky header */}
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <div className="flex items-center gap-3">

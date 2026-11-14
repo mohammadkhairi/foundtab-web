@@ -35,10 +35,13 @@ export default function ProductionTemplateFormPage() {
   const [name, setName] = useState('')
   const [notes, setNotes] = useState('')
   const [scheduleType, setScheduleType] = useState<ScheduleType>('as_needed')
+  const [scheduledDayOfWeek, setScheduledDayOfWeek] = useState<number | null>(null)
+  const [scheduledDate, setScheduledDate] = useState('')
   const [items, setItems] = useState<ItemLine[]>([])
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(isEdit)
   const [error, setError] = useState<string | null>(null)
+  const [recipeSearch, setRecipeSearch] = useState('')
 
   const { data: recipesData } = useQuery({
     queryKey: ['recipes'],
@@ -49,12 +52,14 @@ export default function ProductionTemplateFormPage() {
 
   useEffect(() => {
     if (!isEdit || !token) return
-    void apiFetch<{ name: string; notes: string | null; scheduleType: ScheduleType; items: Array<{ recipeId: string; batchCount: string }> }>(
+    void apiFetch<{ name: string; notes: string | null; scheduleType: ScheduleType; scheduledDayOfWeek: number | null; scheduledDate: string | null; items: Array<{ recipeId: string; batchCount: string }> }>(
       `/api/v1/production-templates/${id}`, { token },
     ).then((tmpl) => {
       setName(tmpl.name)
       setNotes(tmpl.notes ?? '')
       setScheduleType(tmpl.scheduleType ?? 'as_needed')
+      setScheduledDayOfWeek(tmpl.scheduledDayOfWeek ?? null)
+      setScheduledDate(tmpl.scheduledDate ?? '')
       setItems(tmpl.items.map((i) => ({
         recipeId: i.recipeId,
         name: recipes.find((r) => r.id === i.recipeId)?.name ?? i.recipeId,
@@ -80,15 +85,20 @@ export default function ProductionTemplateFormPage() {
         name: name.trim(),
         notes: notes.trim() || undefined,
         scheduleType,
+        scheduledDayOfWeek: scheduleType === 'weekly' && scheduledDayOfWeek !== null ? scheduledDayOfWeek : undefined,
+        scheduledDate: scheduleType === 'one_off' && scheduledDate ? scheduledDate : undefined,
         items: items.map((i) => ({ recipeId: i.recipeId, batchCount: parseFloat(i.batchCount) || 1 })),
       }
       if (isEdit) {
         await apiFetch(`/api/v1/production-templates/${id}`, { method: 'PUT', body: JSON.stringify(payload), token: freshToken })
+        void queryClient.invalidateQueries({ queryKey: ['production-templates'] })
+        void queryClient.invalidateQueries({ queryKey: ['production-template', id] })
+        navigate(`/production-templates/${id}`)
       } else {
-        await apiFetch('/api/v1/production-templates', { method: 'POST', body: JSON.stringify(payload), token: freshToken })
+        const response = await apiFetch('/api/v1/production-templates', { method: 'POST', body: JSON.stringify(payload), token: freshToken })
+        void queryClient.invalidateQueries({ queryKey: ['production-templates'] })
+        navigate('/production-templates/' + (response as { id: string }).id)
       }
-      void queryClient.invalidateQueries({ queryKey: ['production-templates'] })
-      navigate('/production-templates')
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Failed to save plan')
     } finally {
@@ -99,7 +109,7 @@ export default function ProductionTemplateFormPage() {
   if (loading) return <LoadingSpinner />
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-8">
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-gray-500"><BackArrow /></button>
@@ -154,6 +164,48 @@ export default function ProductionTemplateFormPage() {
               </div>
             </div>
 
+            {scheduleType === 'weekly' && (
+              <div>
+                <p className="text-xs font-medium text-gray-600 mb-2">Which day do you run this?</p>
+                <div className="flex gap-1.5 flex-wrap">
+                  {([
+                    { label: 'Mon', value: 0 },
+                    { label: 'Tue', value: 1 },
+                    { label: 'Wed', value: 2 },
+                    { label: 'Thu', value: 3 },
+                    { label: 'Fri', value: 4 },
+                    { label: 'Sat', value: 5 },
+                    { label: 'Sun', value: 6 },
+                  ] as const).map((day) => (
+                    <button
+                      key={day.value}
+                      type="button"
+                      onClick={() => setScheduledDayOfWeek(day.value)}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium border transition-colors ${
+                        scheduledDayOfWeek === day.value
+                          ? 'bg-brand-500 text-white border-brand-500'
+                          : 'bg-white text-gray-600 border-gray-200 hover:border-brand-300 hover:text-brand-600'
+                      }`}
+                    >
+                      {day.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {scheduleType === 'one_off' && (
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">When will you run this?</label>
+                <input
+                  type="date"
+                  value={scheduledDate}
+                  onChange={(e) => setScheduledDate(e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+            )}
+
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1.5">Notes (optional)</label>
               <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)}
@@ -192,18 +244,33 @@ export default function ProductionTemplateFormPage() {
             )}
 
             <div className="bg-white rounded-xl border border-gray-100 shadow-card overflow-hidden">
-              <p className="text-xs font-medium text-gray-400 px-4 pt-3 pb-2">Add recipe</p>
+              <div className="px-3 pt-3 pb-2">
+                <input
+                  type="text"
+                  value={recipeSearch}
+                  onChange={(e) => setRecipeSearch(e.target.value)}
+                  placeholder="Add recipe"
+                  className="w-full text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-300 placeholder-gray-400"
+                />
+              </div>
               <ul className="divide-y divide-gray-50 max-h-52 overflow-y-auto">
-                {recipes.filter((r) => !items.some((i) => i.recipeId === r.id)).map((r) => (
-                  <li key={r.id}>
-                    <button onClick={() => addRecipe(r)}
-                      className="w-full px-4 py-2.5 text-left text-sm text-gray-800 hover:bg-brand-50 hover:text-brand-700 transition-colors flex items-center gap-2">
-                      <span className="text-brand-400 font-bold">+</span> {r.name}
-                    </button>
-                  </li>
-                ))}
+                {recipes
+                  .filter((r) => !items.some((i) => i.recipeId === r.id))
+                  .filter((r) => !recipeSearch || r.name.toLowerCase().includes(recipeSearch.toLowerCase()))
+                  .map((r) => (
+                    <li key={r.id}>
+                      <button onClick={() => { addRecipe(r); setRecipeSearch('') }}
+                        className="w-full px-4 py-2.5 text-left text-sm text-gray-800 hover:bg-brand-50 hover:text-brand-700 transition-colors flex items-center gap-2">
+                        <span className="text-brand-400 font-bold">+</span> {r.name}
+                      </button>
+                    </li>
+                  ))}
                 {recipes.filter((r) => !items.some((i) => i.recipeId === r.id)).length === 0 && (
                   <li className="p-4 text-center text-sm text-gray-400">All recipes added</li>
+                )}
+                {recipes.filter((r) => !items.some((i) => i.recipeId === r.id)).length > 0 &&
+                  recipes.filter((r) => !items.some((i) => i.recipeId === r.id)).filter((r) => r.name.toLowerCase().includes(recipeSearch.toLowerCase())).length === 0 && (
+                  <li className="p-4 text-center text-sm text-gray-400">No recipes match "{recipeSearch}"</li>
                 )}
               </ul>
             </div>

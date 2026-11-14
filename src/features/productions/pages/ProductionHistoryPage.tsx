@@ -78,7 +78,7 @@ export default function ProductionHistoryPage() {
   const items = data?.items ?? []
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-6">
       <Joyride
         steps={steps}
         run={shouldRun}
@@ -116,6 +116,11 @@ export default function ProductionHistoryPage() {
           + {t('productions_add')}
         </button>
       </header>
+
+      {/* Feature description */}
+      <p className="text-xs text-gray-500 px-4 pt-3 pb-1 md:px-6 md:pt-4 md:pb-0">
+        Log each time you make a batch. Mark it done when finished — your stock levels update automatically.
+      </p>
 
       {/* Mobile list */}
       <div className="p-4 md:hidden">

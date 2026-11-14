@@ -223,7 +223,7 @@ export default function RecipeFormPage() {
   )
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-8">
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-gray-500" aria-label={t('common_back')}><BackArrow /></button>
@@ -271,8 +271,11 @@ export default function RecipeFormPage() {
                   Yield Breakdown
                 </button>
               </div>
+              {recipeType === 'PRODUCTION' && (
+                <p className="text-xs text-gray-500 mt-1.5">Combine ingredients to make a finished product (e.g. flour + eggs + sugar → Chocolate Cake)</p>
+              )}
               {recipeType === 'YIELD_BREAKDOWN' && (
-                <p className="text-xs text-amber-600 mt-1.5">Splits a raw material into sub-components (e.g. whole chicken → breast, thigh, wing).</p>
+                <p className="text-xs text-amber-600 mt-1.5">Break one material into smaller parts (e.g. 1 whole chicken → breast, thigh, wings)</p>
               )}
             </div>
             <div>
@@ -288,6 +291,7 @@ export default function RecipeFormPage() {
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-1">
               {recipeType === 'YIELD_BREAKDOWN' ? 'Input Material' : t('recipe_ingredientsTitle')}
             </p>
+            <p className="text-xs text-gray-500 mb-3">Enter how much of each ingredient is needed for one full batch.</p>
             {ingredients.length > 0 && (
               <div className="bg-white rounded-xl border border-gray-100 shadow-card overflow-hidden divide-y divide-gray-100 mb-3">
                 {ingredients.map((line, idx) => (
@@ -338,6 +342,7 @@ export default function RecipeFormPage() {
               {outputs.length === 0 && (
                 <div className="bg-white rounded-xl border-2 border-dashed border-gray-200 p-4 text-center mb-3">
                   <p className="text-sm text-gray-400">{t('recipe_noOutputs')}</p>
+                  <p className="text-xs text-gray-400 mt-1">Add the product(s) this recipe produces. For example, 1 batch of &ldquo;Chocolate Cake Recipe&rdquo; might produce 10 × Chocolate Cake.</p>
                 </div>
               )}
               {outputs.length > 0 && (
@@ -387,7 +392,8 @@ export default function RecipeFormPage() {
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 px-1">Sub-component Outputs</p>
               {rawMaterialOutputs.length === 0 && (
                 <div className="bg-white rounded-xl border-2 border-dashed border-amber-200 p-4 text-center mb-3">
-                  <p className="text-sm text-gray-400">Add the materials you get out of the breakdown</p>
+                  <p className="text-sm text-gray-400">Add the materials this breakdown produces.</p>
+                  <p className="text-xs text-gray-400 mt-1">For example, breaking down 1 whole chicken yields breast, thigh, and wings as separate ingredients.</p>
                 </div>
               )}
               {rawMaterialOutputs.length > 0 && (

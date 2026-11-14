@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { clearStoredToken, getStoredToken } from '../../hooks/useAuth'
 import { useAuth } from '../../hooks/useAuth'
 import { apiFetch } from '../../lib/api'
 import { usePushSubscription } from '../notifications/hooks/usePushSubscription'
@@ -349,12 +350,24 @@ export function isOnboardingDone(): boolean {
   return localStorage.getItem(ONBOARDING_DONE_KEY) === '1'
 }
 
+function hasOrgInToken(): boolean {
+  const t = getStoredToken()
+  if (!t) return false
+  try {
+    const [, payload] = t.split('.')
+    const p = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))) as { orgId?: string }
+    return !!p.orgId
+  } catch { return false }
+}
+
 export default function OnboardingFlow() {
   const navigate = useNavigate()
   const [step, setStep] = useState<OnboardingStep>('lang')
 
   function next(from: OnboardingStep) {
-    const order: OnboardingStep[] = ['lang', 'org', 'pwa', 'notifications', 'done']
+    const order: OnboardingStep[] = hasOrgInToken()
+      ? ['lang', 'pwa', 'notifications', 'done']  // skip org step for portal-created users
+      : ['lang', 'org', 'pwa', 'notifications', 'done']
     const idx = order.indexOf(from)
     const nextStep = order[idx + 1] ?? 'done'
     if (nextStep === 'done') {
@@ -369,16 +382,24 @@ export default function OnboardingFlow() {
   const currentIdx = progressSteps.indexOf(step as (typeof progressSteps)[number])
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="flex justify-center pt-4 pb-2">
-        {progressSteps.map((s, i) => (
-          <div
-            key={s}
-            className={`w-2 h-2 rounded-full mx-1 transition-colors ${
-              i === currentIdx ? 'bg-brand-500' : i < currentIdx ? 'bg-brand-200' : 'bg-gray-200'
-            }`}
-          />
-        ))}
+    <div className="min-h-screen bg-brand-50">
+      <div className="flex items-center justify-between px-4 pt-4">
+        <div className="flex justify-center flex-1">
+          {progressSteps.map((s, i) => (
+            <div
+              key={s}
+              className={`w-2 h-2 rounded-full mx-1 transition-colors ${
+                i === currentIdx ? 'bg-brand-500' : i < currentIdx ? 'bg-brand-200' : 'bg-gray-200'
+              }`}
+            />
+          ))}
+        </div>
+        <button
+          onClick={() => { clearStoredToken(); navigate('/sign-in') }}
+          className="text-xs text-gray-400 hover:text-gray-600 transition-colors shrink-0"
+        >
+          Sign out
+        </button>
       </div>
 
       {step === 'lang' && <LangStep onNext={() => next('lang')} />}

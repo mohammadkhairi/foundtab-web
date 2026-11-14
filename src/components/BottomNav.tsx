@@ -1,5 +1,6 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { useT } from '../hooks/useT'
+import { useFeatureFlags } from '../contexts/FeatureFlagsContext'
 
 function HomeIcon() {
   return (
@@ -25,7 +26,6 @@ function ShoppingBagIcon() {
   )
 }
 
-
 function CogIcon() {
   return (
     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
@@ -43,41 +43,83 @@ function TrashIcon() {
   )
 }
 
+function LockIcon() {
+  return (
+    <svg className="w-3 h-3 absolute top-1.5 right-2 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+    </svg>
+  )
+}
+
+type NavItem = {
+  path: string
+  label: string
+  icon: React.ReactNode
+  moduleKey?: string
+}
+
 export default function BottomNav() {
   const t = useT()
+  const navigate = useNavigate()
+  const { isAccessible, isLocked } = useFeatureFlags()
 
-  const NAV_ITEMS = [
-    { path: '/dashboard', label: t('nav_home'), icon: <HomeIcon /> },
-    { path: '/raw-materials', label: t('nav_materials'), icon: <BoxIcon /> },
-    { path: '/orders', label: t('nav_orders'), icon: <ShoppingBagIcon /> },
-    { path: '/wastage', label: t('nav_wastage'), icon: <TrashIcon /> },
+  const NAV_ITEMS: NavItem[] = [
+    { path: '/dashboard', label: t('nav_home'), icon: <HomeIcon />, moduleKey: 'dashboard' },
+    { path: '/raw-materials', label: t('nav_materials'), icon: <BoxIcon />, moduleKey: 'rawMaterials' },
+    { path: '/orders', label: t('nav_orders'), icon: <ShoppingBagIcon />, moduleKey: 'orders' },
+    { path: '/wastage', label: t('nav_wastage'), icon: <TrashIcon />, moduleKey: 'wastageReport' },
     { path: '/settings/notifications', label: t('nav_more'), icon: <CogIcon /> },
   ]
+
+  const visibleItems = NAV_ITEMS.filter((item) => {
+    if (!item.moduleKey) return true
+    // Hide if flag kill-switched off (not accessible AND not just locked by plan)
+    if (!isAccessible(item.moduleKey) && !isLocked(item.moduleKey)) return false
+    return true
+  })
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 md:hidden bg-white border-t border-gray-100 z-20 shadow-[0_-1px_8px_rgba(0,0,0,0.06)]">
       <div className="flex">
-        {NAV_ITEMS.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `flex-1 flex flex-col items-center justify-center pt-2 pb-3 gap-1 transition-colors relative ${
-                isActive ? 'text-brand-600' : 'text-gray-400'
-              }`
-            }
-          >
-            {({ isActive }) => (
-              <>
-                {isActive && (
-                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-brand-500" />
-                )}
+        {visibleItems.map((item) => {
+          const locked = item.moduleKey ? isLocked(item.moduleKey) : false
+
+          if (locked) {
+            return (
+              <button
+                key={item.path}
+                onClick={() => navigate('/billing')}
+                className="flex-1 flex flex-col items-center justify-center pt-2 pb-3 gap-1 relative text-gray-300 opacity-60"
+              >
                 {item.icon}
                 <span className="text-[10px] font-medium">{item.label}</span>
-              </>
-            )}
-          </NavLink>
-        ))}
+                <LockIcon />
+              </button>
+            )
+          }
+
+          return (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                `flex-1 flex flex-col items-center justify-center pt-2 pb-3 gap-1 transition-colors relative ${
+                  isActive ? 'text-brand-600' : 'text-gray-400'
+                }`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  {isActive && (
+                    <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-full bg-brand-500" />
+                  )}
+                  {item.icon}
+                  <span className="text-[10px] font-medium">{item.label}</span>
+                </>
+              )}
+            </NavLink>
+          )
+        })}
       </div>
     </nav>
   )

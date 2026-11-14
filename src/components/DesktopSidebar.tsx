@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { useClerk } from '@clerk/react'
+import { clearStoredToken } from '../hooks/useAuth'
 import { useT } from '../hooks/useT'
+import { useFeatureFlags } from '../contexts/FeatureFlagsContext'
 
 function HomeIcon() {
   return (
@@ -83,51 +84,120 @@ function TrashIcon() {
   )
 }
 
+function ReceiptIcon() {
+  return (
+    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
+    </svg>
+  )
+}
+
+function LockIcon() {
+  return (
+    <svg className="w-3 h-3 ml-auto opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+    </svg>
+  )
+}
+
+type NavItem = {
+  path: string
+  label: string
+  icon: React.ReactNode
+  moduleKey?: string
+}
+
+type NavGroup = {
+  label: string
+  items: NavItem[]
+}
+
 export default function DesktopSidebar() {
   const t = useT()
-  const { signOut } = useClerk()
   const navigate = useNavigate()
+  const { isAccessible, isLocked } = useFeatureFlags()
 
-  const NAV_GROUPS = [
+  const NAV_GROUPS: NavGroup[] = [
     {
       label: t('nav_home'),
       items: [
-        { path: '/dashboard', label: t('nav_home'), icon: <HomeIcon /> },
+        { path: '/dashboard', label: t('nav_home'), icon: <HomeIcon />, moduleKey: 'dashboard' },
       ],
     },
     {
       label: t('nav_inventory'),
       items: [
-        { path: '/raw-materials', label: t('nav_materials'), icon: <BoxIcon /> },
-        { path: '/purchases', label: t('nav_purchases'), icon: <ShoppingCartIcon /> },
-        { path: '/products', label: t('nav_products'), icon: <PackageIcon /> },
-        { path: '/wastage', label: t('nav_wastage'), icon: <TrashIcon /> },
-        { path: '/stock-movements', label: t('nav_stockMovements'), icon: <ChartIcon /> },
+        { path: '/raw-materials', label: t('nav_materials'), icon: <BoxIcon />, moduleKey: 'rawMaterials' },
+        { path: '/purchases', label: t('nav_purchases'), icon: <ShoppingCartIcon />, moduleKey: 'purchases' },
+        { path: '/products', label: t('nav_products'), icon: <PackageIcon />, moduleKey: 'products' },
+        { path: '/wastage', label: t('nav_wastage'), icon: <TrashIcon />, moduleKey: 'wastageReport' },
+        { path: '/stock-movements', label: t('nav_stockMovements'), icon: <ChartIcon />, moduleKey: 'rawMaterials' },
       ],
     },
     {
       label: t('nav_production'),
       items: [
-        { path: '/recipes', label: t('nav_recipes'), icon: <ClipboardIcon /> },
-        { path: '/production-templates', label: t('nav_productionTemplates'), icon: <ClipboardIcon /> },
-        { path: '/productions', label: t('nav_productionLog'), icon: <ClipboardIcon /> },
+        { path: '/recipes', label: t('nav_recipes'), icon: <ClipboardIcon />, moduleKey: 'recipes' },
+        { path: '/production-templates', label: t('nav_productionTemplates'), icon: <ClipboardIcon />, moduleKey: 'productions' },
+        { path: '/productions', label: t('nav_productionLog'), icon: <ClipboardIcon />, moduleKey: 'productions' },
       ],
     },
     {
       label: t('nav_sales'),
       items: [
-        { path: '/catalogue', label: t('nav_catalogue'), icon: <PackageIcon /> },
-        { path: '/orders', label: t('nav_orders'), icon: <ShoppingBagIcon /> },
+        { path: '/catalogue', label: t('nav_catalogue'), icon: <PackageIcon />, moduleKey: 'orders' },
+        { path: '/orders', label: t('nav_orders'), icon: <ShoppingBagIcon />, moduleKey: 'orders' },
+        { path: '/consignments', label: t('nav_consignments'), icon: <ClipboardIcon /> },
       ],
     },
     {
       label: t('nav_other'),
       items: [
+        { path: '/billing', label: 'Billing', icon: <ReceiptIcon /> },
         { path: '/export', label: t('nav_export'), icon: <ChartIcon /> },
         { path: '/settings/notifications', label: t('nav_settings'), icon: <CogIcon /> },
       ],
     },
   ]
+
+  function renderItem(item: NavItem) {
+    if (item.moduleKey) {
+      // Flag disabled (kill-switch): hide completely
+      if (!isAccessible(item.moduleKey) && !isLocked(item.moduleKey)) return null
+
+      // Plan too low: show locked, clicking goes to billing
+      if (isLocked(item.moduleKey)) {
+        return (
+          <button
+            key={item.path}
+            onClick={() => navigate('/billing')}
+            className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-sm font-medium text-brand-800 opacity-50 hover:opacity-70 transition-opacity"
+          >
+            {item.icon}
+            {item.label}
+            <LockIcon />
+          </button>
+        )
+      }
+    }
+
+    return (
+      <NavLink
+        key={item.path}
+        to={item.path}
+        className={({ isActive }) =>
+          `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+            isActive
+              ? 'bg-brand-500 text-white'
+              : 'text-brand-300 hover:bg-white/5 hover:text-brand-100'
+          }`
+        }
+      >
+        {item.icon}
+        {item.label}
+      </NavLink>
+    )
+  }
 
   return (
     <aside className="hidden md:flex flex-col w-60 min-h-screen bg-brand-950 border-r border-brand-900 shrink-0">
@@ -138,37 +208,26 @@ export default function DesktopSidebar() {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-5 overflow-y-auto">
-        {NAV_GROUPS.map((group) => (
-          <div key={group.label}>
-            <p className="px-3 mb-1.5 text-[10px] font-semibold text-brand-700 uppercase tracking-widest">
-              {group.label}
-            </p>
-            <div className="space-y-0.5">
-              {group.items.map((item) => (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-brand-500 text-white'
-                        : 'text-brand-300 hover:bg-white/5 hover:text-brand-100'
-                    }`
-                  }
-                >
-                  {item.icon}
-                  {item.label}
-                </NavLink>
-              ))}
+        {NAV_GROUPS.map((group) => {
+          const visibleItems = group.items.map(renderItem).filter(Boolean)
+          if (visibleItems.length === 0) return null
+          return (
+            <div key={group.label}>
+              <p className="px-3 mb-1.5 text-[10px] font-semibold text-brand-700 uppercase tracking-widest">
+                {group.label}
+              </p>
+              <div className="space-y-0.5">
+                {visibleItems}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </nav>
 
       {/* Sign out */}
       <div className="px-3 py-4 border-t border-brand-900">
         <button
-          onClick={() => void signOut(() => navigate('/sign-in'))}
+          onClick={() => { clearStoredToken(); navigate('/sign-in') }}
           className="flex items-center gap-2.5 px-3 py-2 w-full rounded-lg text-sm font-medium text-brand-600 hover:bg-white/5 hover:text-brand-400 transition-colors"
         >
           <LogoutIcon />

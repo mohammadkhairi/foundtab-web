@@ -142,7 +142,7 @@ export default function MenuFormPage() {
   )
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-8">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-8">
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-gray-500"><BackArrow /></button>

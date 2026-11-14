@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 const schema = z.object({
-  VITE_CLERK_PUBLISHABLE_KEY: z.string().min(1),
+  VITE_CLERK_PUBLISHABLE_KEY: z.string().optional(),
   VITE_API_URL: z.string().default(''),
   VITE_APP_ENV: z.enum(['local', 'staging', 'production']).default('local'),
   VITE_VAPID_PUBLIC_KEY: z.string().default(''),

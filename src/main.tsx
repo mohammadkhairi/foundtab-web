@@ -2,9 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from '@tanstack/react-query'
-import { ClerkProvider } from '@clerk/react'
 import App from './App'
-import { env } from './config/env'
 import { LangProvider } from './contexts/LangContext'
 import { FeatureFlagsProvider } from './contexts/FeatureFlagsContext'
 import { ApiError } from './lib/api'
@@ -31,16 +29,14 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ClerkProvider publishableKey={env.VITE_CLERK_PUBLISHABLE_KEY}>
-      <LangProvider>
-        <QueryClientProvider client={queryClient}>
-          <FeatureFlagsProvider>
-            <BrowserRouter>
-              <App />
-            </BrowserRouter>
-          </FeatureFlagsProvider>
-        </QueryClientProvider>
-      </LangProvider>
-    </ClerkProvider>
+    <LangProvider>
+      <QueryClientProvider client={queryClient}>
+        <FeatureFlagsProvider>
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </FeatureFlagsProvider>
+      </QueryClientProvider>
+    </LangProvider>
   </React.StrictMode>,
 )

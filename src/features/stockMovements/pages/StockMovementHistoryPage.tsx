@@ -110,7 +110,7 @@ export default function StockMovementHistoryPage() {
   const items = data?.items ?? []
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-20 md:pb-6">
+    <div className="min-h-screen bg-brand-50 pb-20 md:pb-6">
       {/* Mobile header */}
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <h1 className="text-base font-semibold text-gray-900 mb-2">{t('stockMovements_title')}</h1>
