@@ -93,6 +93,7 @@ export default function OcrReviewPage() {
   const [variantInputs, setVariantInputs] = useState<Record<number, string>>({})
   const [error, setError] = useState<string | null>(null)
   const [materials, setMaterials] = useState<RawMaterial[]>([])
+  const [materialPanelSearch, setMaterialPanelSearch] = useState('')
   const [addingManualItem, setAddingManualItem] = useState(false)
   const [manualItem, setManualItem] = useState<ManualItem>({ name: '', materialId: null, quantity: '', unit: '' })
   const draftSaveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -490,6 +491,34 @@ export default function OcrReviewPage() {
   const currentUnmatchedItem = unmatchedItems[reviewIdx] as ReviewItem | undefined
   const confirmedItems = reviewItems.filter((i) => !i.deleted && !i.skipped && !isFeeItem(i.itemName))
 
+  // Materials panel — sorted by fuzzy match to current item, then alphabetically
+  const panelMaterials = (() => {
+    const q = materialPanelSearch.trim().toLowerCase()
+    const scored = materials
+      .filter((m) => !q || m.name.toLowerCase().includes(q))
+      .map((m) => ({
+        m,
+        score: currentUnmatchedItem ? fuzzyScore(currentUnmatchedItem.itemName, m.name) : 0,
+      }))
+      .sort((a, b) => b.score - a.score || a.m.name.localeCompare(b.m.name))
+    return scored
+  })()
+
+  function handleMaterialPanelClick(material: RawMaterial) {
+    if (!currentUnmatchedItem) return
+    const globalIdx = reviewItems.findIndex((r) => r === currentUnmatchedItem)
+    saveMapping(fields.supplierName, currentUnmatchedItem.itemName, material.id)
+    setReviewItems((prev) =>
+      prev.map((r, i) =>
+        i === globalIdx
+          ? { ...r, mappedMaterialId: material.id, mappedMaterialName: material.name, showPicker: false }
+          : r,
+      ),
+    )
+    setTrackingIdx(null)
+    advanceReview()
+  }
+
   const backButton = (
     <button onClick={() => navigate(-1)} className="text-gray-500" aria-label={t('common_back')}>
       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -614,141 +643,214 @@ export default function OcrReviewPage() {
 
         {/* Review phase — one unmatched item at a time */}
         {phase === 'review' && currentUnmatchedItem && (
-          <div className="space-y-4">
-            {/* Case A: LLM matched to existing and user has NOT rejected */}
-            {currentUnmatchedItem.suggestedRawMaterialId !== null && !rejectedSuggestions.has(reviewIdx) && (
-              <div className="space-y-4">
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5">
-                  <p className="text-xs text-gray-400 mb-1">{currentUnmatchedItem.itemName}</p>
-                  <p className="text-sm text-gray-600">
-                    {currentUnmatchedItem.quantity} {currentUnmatchedItem.unit}
-                    {currentUnmatchedItem.totalPrice ? ` · RM ${currentUnmatchedItem.totalPrice.toFixed(2)}` : ''}
-                  </p>
-                  <div className="mt-4">
-                    <p className="text-sm font-medium text-gray-900 mb-3">Is this the same as:</p>
-                    <button
-                      onClick={() => confirmSuggestion(reviewIdx)}
-                      className="w-full flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-700"
-                    >
-                      <span>✓</span> Yes — {currentUnmatchedItem.suggestedGenericName}
-                    </button>
-                    <button
-                      onClick={() => rejectSuggestion(reviewIdx)}
-                      className="w-full mt-2 flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-600"
-                    >
-                      <span>✕</span> No, it's different
-                    </button>
+          <div className="md:flex md:gap-5 md:items-start">
+
+            {/* ── Left: review card ─────────────────────────────────────── */}
+            <div className="md:flex-1 space-y-4">
+
+              {/* Mobile quick-pick strip — top fuzzy matches */}
+              {materials.length > 0 && (
+                <div className="md:hidden">
+                  <p className="text-xs text-gray-400 mb-2">Your materials — tap to match:</p>
+                  <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
+                    {panelMaterials.slice(0, 8).map(({ m, score }) => (
+                      <button
+                        key={m.id}
+                        type="button"
+                        onClick={() => handleMaterialPanelClick(m)}
+                        className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                          score > 0.5
+                            ? 'bg-brand-500 text-white border-brand-500'
+                            : 'bg-white text-gray-700 border-gray-200 hover:border-brand-300 hover:bg-brand-50'
+                        }`}
+                      >
+                        {m.name}
+                      </button>
+                    ))}
                   </div>
                 </div>
-                <p className="text-xs text-center text-gray-400">Item {reviewIdx + 1} of {unmatchedItems.length}</p>
-              </div>
-            )}
+              )}
 
-            {/* Case B: New item OR rejected suggestion — not yet tracking */}
-            {(currentUnmatchedItem.suggestedRawMaterialId === null || rejectedSuggestions.has(reviewIdx)) &&
-              trackingIdx !== reviewIdx &&
-              !currentUnmatchedItem.showPicker && (
-              <div className="space-y-4">
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 space-y-4">
-                  <div>
+              {/* Case A: LLM matched to existing and user has NOT rejected */}
+              {currentUnmatchedItem.suggestedRawMaterialId !== null && !rejectedSuggestions.has(reviewIdx) && (
+                <div className="space-y-4">
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5">
                     <p className="text-xs text-gray-400 mb-1">{currentUnmatchedItem.itemName}</p>
                     <p className="text-sm text-gray-600">
                       {currentUnmatchedItem.quantity} {currentUnmatchedItem.unit}
                       {currentUnmatchedItem.totalPrice ? ` · RM ${currentUnmatchedItem.totalPrice.toFixed(2)}` : ''}
                     </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900 mb-3">Do you want to track this in your stock?</p>
-                    <button
-                      onClick={() => trackItem(reviewIdx)}
-                      className="w-full flex items-center gap-3 p-3 bg-brand-50 border border-brand-200 rounded-xl text-sm font-medium text-brand-700 mb-2"
-                    >
-                      <span>✓</span> Yes, track this item
-                    </button>
-                    <button
-                      onClick={() => skipItem(reviewIdx)}
-                      className="w-full flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-600"
-                    >
-                      <span>✕</span> No, skip it
-                    </button>
-                  </div>
-                </div>
-                <p className="text-xs text-center text-gray-400">Item {reviewIdx + 1} of {unmatchedItems.length}</p>
-              </div>
-            )}
-
-            {/* Case B: tracking — name editing sub-view */}
-            {trackingIdx === reviewIdx && !currentUnmatchedItem.showPicker && (
-              <div className="space-y-4">
-                <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 space-y-3">
-                  <p className="text-xs text-gray-400 mb-1">{currentUnmatchedItem.itemName}</p>
-                  <p className="text-sm font-medium text-gray-900">What do you call this item?</p>
-                  <input
-                    type="text"
-                    value={currentUnmatchedItem.mappedMaterialName}
-                    onChange={(e) => updateItemName(reviewIdx, e.target.value)}
-                    className="w-full border border-amber-200 bg-amber-50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  />
-                  <p className="text-xs text-gray-400">Use a simple name, e.g. "TEPUNG GANDUM" not "TEPUNG GANDUM CAP SAWAH"</p>
-                  <button
-                    onClick={() => advanceReview()}
-                    className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm"
-                  >
-                    Save & next →
-                  </button>
-                  <button
-                    onClick={() => setShowPickerForIdx(reviewIdx)}
-                    className="block w-full text-center text-xs text-brand-600 font-medium"
-                  >
-                    Link to existing item instead →
-                  </button>
-                </div>
-                <p className="text-xs text-center text-gray-400">Item {reviewIdx + 1} of {unmatchedItems.length}</p>
-              </div>
-            )}
-
-            {/* Picker sub-view */}
-            {currentUnmatchedItem.showPicker && (() => {
-              const topMatches = [...materials]
-                .map((m) => ({ m, score: fuzzyScore(currentUnmatchedItem.itemName, m.name) }))
-                .filter(({ score }) => score > 0.3)
-                .sort((a, b) => b.score - a.score)
-                .slice(0, 3)
-              return (
-                <div className="space-y-4">
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 space-y-3">
-                    <p className="text-xs text-gray-400 mb-1">{currentUnmatchedItem.itemName}</p>
-                    <p className="text-sm font-medium text-gray-900">Search your stock:</p>
-                    {topMatches.length > 0 && (
-                      <div className="space-y-1">
-                        <p className="text-xs text-gray-400">Quick picks:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {topMatches.map(({ m }) => (
-                            <button
-                              key={m.id}
-                              type="button"
-                              onClick={() => linkToExisting(reviewIdx, m.id)}
-                              className="px-3 py-1.5 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-medium rounded-full hover:bg-brand-100 transition-colors"
-                            >
-                              {m.name}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                    <SearchableSelect
-                      value={currentUnmatchedItem.mappedMaterialId ?? '__new__'}
-                      onChange={(id, typedName) => linkToExisting(reviewIdx, id, typedName)}
-                      options={materials.map((m) => ({ id: m.id, label: m.name, sublabel: m.baseUnit }))}
-                      createOption={{ id: '__new__', label: (q) => q ? `Add as new: "${q.toUpperCase()}" →` : 'Add as new item →' }}
-                      placeholder="Type to search..."
-                      searchPlaceholder="Search or type a name to add new…"
-                    />
+                    <div className="mt-4">
+                      <p className="text-sm font-medium text-gray-900 mb-3">Is this the same as:</p>
+                      <button
+                        onClick={() => confirmSuggestion(reviewIdx)}
+                        className="w-full flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-xl text-sm font-medium text-green-700"
+                      >
+                        <span>✓</span> Yes — {currentUnmatchedItem.suggestedGenericName}
+                      </button>
+                      <button
+                        onClick={() => rejectSuggestion(reviewIdx)}
+                        className="w-full mt-2 flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-600"
+                      >
+                        <span>✕</span> No, it's different
+                      </button>
+                    </div>
                   </div>
                   <p className="text-xs text-center text-gray-400">Item {reviewIdx + 1} of {unmatchedItems.length}</p>
                 </div>
-              )
-            })()}
+              )}
+
+              {/* Case B: New item OR rejected suggestion — not yet tracking */}
+              {(currentUnmatchedItem.suggestedRawMaterialId === null || rejectedSuggestions.has(reviewIdx)) &&
+                trackingIdx !== reviewIdx &&
+                !currentUnmatchedItem.showPicker && (
+                <div className="space-y-4">
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 space-y-4">
+                    <div>
+                      <p className="text-xs text-gray-400 mb-1">{currentUnmatchedItem.itemName}</p>
+                      <p className="text-sm text-gray-600">
+                        {currentUnmatchedItem.quantity} {currentUnmatchedItem.unit}
+                        {currentUnmatchedItem.totalPrice ? ` · RM ${currentUnmatchedItem.totalPrice.toFixed(2)}` : ''}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 mb-3">Do you want to track this in your stock?</p>
+                      <button
+                        onClick={() => trackItem(reviewIdx)}
+                        className="w-full flex items-center gap-3 p-3 bg-brand-50 border border-brand-200 rounded-xl text-sm font-medium text-brand-700 mb-2"
+                      >
+                        <span>✓</span> Yes, track this item
+                      </button>
+                      <button
+                        onClick={() => skipItem(reviewIdx)}
+                        className="w-full flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-600"
+                      >
+                        <span>✕</span> No, skip it
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-center text-gray-400">Item {reviewIdx + 1} of {unmatchedItems.length}</p>
+                </div>
+              )}
+
+              {/* Case B: tracking — name editing sub-view */}
+              {trackingIdx === reviewIdx && !currentUnmatchedItem.showPicker && (
+                <div className="space-y-4">
+                  <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 space-y-3">
+                    <p className="text-xs text-gray-400 mb-1">{currentUnmatchedItem.itemName}</p>
+                    <p className="text-sm font-medium text-gray-900">What do you call this item?</p>
+                    <input
+                      type="text"
+                      value={currentUnmatchedItem.mappedMaterialName}
+                      onChange={(e) => updateItemName(reviewIdx, e.target.value)}
+                      className="w-full border border-amber-200 bg-amber-50 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    />
+                    <p className="text-xs text-gray-400">Use a simple name, e.g. "TEPUNG GANDUM" not "TEPUNG GANDUM CAP SAWAH"</p>
+                    <button
+                      onClick={() => advanceReview()}
+                      className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-sm"
+                    >
+                      Save & next →
+                    </button>
+                    <button
+                      onClick={() => setShowPickerForIdx(reviewIdx)}
+                      className="block w-full text-center text-xs text-brand-600 font-medium"
+                    >
+                      Link to existing item instead →
+                    </button>
+                  </div>
+                  <p className="text-xs text-center text-gray-400">Item {reviewIdx + 1} of {unmatchedItems.length}</p>
+                </div>
+              )}
+
+              {/* Picker sub-view */}
+              {currentUnmatchedItem.showPicker && (() => {
+                const topMatches = panelMaterials.filter(({ score }) => score > 0.3).slice(0, 3)
+                return (
+                  <div className="space-y-4">
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-card p-5 space-y-3">
+                      <p className="text-xs text-gray-400 mb-1">{currentUnmatchedItem.itemName}</p>
+                      <p className="text-sm font-medium text-gray-900">Search your stock:</p>
+                      {topMatches.length > 0 && (
+                        <div className="space-y-1">
+                          <p className="text-xs text-gray-400">Quick picks:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {topMatches.map(({ m }) => (
+                              <button
+                                key={m.id}
+                                type="button"
+                                onClick={() => linkToExisting(reviewIdx, m.id)}
+                                className="px-3 py-1.5 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-medium rounded-full hover:bg-brand-100 transition-colors"
+                              >
+                                {m.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      <SearchableSelect
+                        value={currentUnmatchedItem.mappedMaterialId ?? '__new__'}
+                        onChange={(id, typedName) => linkToExisting(reviewIdx, id, typedName)}
+                        options={materials.map((m) => ({ id: m.id, label: m.name, sublabel: m.baseUnit }))}
+                        createOption={{ id: '__new__', label: (q) => q ? `Add as new: "${q.toUpperCase()}" →` : 'Add as new item →' }}
+                        placeholder="Type to search..."
+                        searchPlaceholder="Search or type a name to add new…"
+                      />
+                    </div>
+                    <p className="text-xs text-center text-gray-400">Item {reviewIdx + 1} of {unmatchedItems.length}</p>
+                  </div>
+                )
+              })()}
+            </div>
+
+            {/* ── Right: materials panel (desktop only) ─────────────────── */}
+            {materials.length > 0 && (
+              <div className="hidden md:flex md:flex-col md:w-64 md:flex-shrink-0 md:sticky md:top-20">
+                <div className="bg-white rounded-2xl border border-gray-100 shadow-card overflow-hidden">
+                  <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Your Materials</p>
+                    <input
+                      type="text"
+                      value={materialPanelSearch}
+                      onChange={(e) => setMaterialPanelSearch(e.target.value)}
+                      placeholder="Search…"
+                      className="w-full border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-brand-400"
+                    />
+                  </div>
+                  <ul className="divide-y divide-gray-50 overflow-y-auto max-h-[calc(100vh-240px)]">
+                    {panelMaterials.map(({ m, score }) => (
+                      <li key={m.id}>
+                        <button
+                          type="button"
+                          onClick={() => handleMaterialPanelClick(m)}
+                          className={`w-full text-left px-4 py-2.5 hover:bg-brand-50 transition-colors group ${
+                            score > 0.5 ? 'bg-brand-50/40' : ''
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-1">
+                            <span className="text-sm font-medium text-gray-900 truncate group-hover:text-brand-700 transition-colors">
+                              {m.name}
+                            </span>
+                            {score > 0.5 && (
+                              <span className="flex-shrink-0 text-[10px] font-semibold text-brand-500 bg-brand-100 px-1.5 py-0.5 rounded-full">
+                                Match
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-400">{m.baseUnit}</span>
+                        </button>
+                      </li>
+                    ))}
+                    {panelMaterials.length === 0 && (
+                      <li className="px-4 py-6 text-center text-xs text-gray-400">No materials found</li>
+                    )}
+                  </ul>
+                </div>
+                <p className="text-xs text-center text-gray-400 mt-3">
+                  Click any material to match
+                </p>
+              </div>
+            )}
           </div>
         )}
 
