@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../hooks/useAuth'
 import { apiFetch, ApiError } from '../../../lib/api'
@@ -491,18 +491,16 @@ export default function OcrReviewPage() {
   const currentUnmatchedItem = unmatchedItems[reviewIdx] as ReviewItem | undefined
   const confirmedItems = reviewItems.filter((i) => !i.deleted && !i.skipped && !isFeeItem(i.itemName))
 
-  // Materials panel — sorted by fuzzy match to current item, then alphabetically
-  const panelMaterials = (() => {
+  const panelMaterials = useMemo(() => {
     const q = materialPanelSearch.trim().toLowerCase()
-    const scored = materials
+    return materials
       .filter((m) => !q || m.name.toLowerCase().includes(q))
       .map((m) => ({
         m,
         score: currentUnmatchedItem ? fuzzyScore(currentUnmatchedItem.itemName, m.name) : 0,
       }))
       .sort((a, b) => b.score - a.score || a.m.name.localeCompare(b.m.name))
-    return scored
-  })()
+  }, [materials, materialPanelSearch, currentUnmatchedItem])
 
   function handleMaterialPanelClick(material: RawMaterial) {
     if (!currentUnmatchedItem) return
