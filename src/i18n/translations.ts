@@ -596,6 +596,14 @@ const en = {
   menu_typePack: 'Pack of',
   menu_typeSet: 'Set',
 
+  // Raw Materials bulk import
+  rawMaterials_downloadTemplate: 'Download Template',
+  rawMaterials_uploadTemplate: 'Upload',
+  rawMaterials_importing: 'Importing…',
+  rawMaterials_importSuccess: '{count} material(s) imported',
+  rawMaterials_importErrors: 'Some rows had errors:',
+  rawMaterials_importRowError: 'Row {row}: {message}',
+
   // Errors / Empty states
   error_generic: 'Something went wrong.',
   error_retry: 'Retry',
@@ -1196,6 +1204,14 @@ const ms: Record<keyof typeof en, string> = {
   menu_typeSingle: 'Tunggal',
   menu_typePack: 'Pek',
   menu_typeSet: 'Set',
+
+  // Raw Materials bulk import
+  rawMaterials_downloadTemplate: 'Muat Turun Templat',
+  rawMaterials_uploadTemplate: 'Muat Naik',
+  rawMaterials_importing: 'Mengimport…',
+  rawMaterials_importSuccess: '{count} bahan diimport',
+  rawMaterials_importErrors: 'Beberapa baris mengandungi ralat:',
+  rawMaterials_importRowError: 'Baris {row}: {message}',
 
   // Errors / Empty states
   error_generic: 'Sesuatu telah berlaku.',

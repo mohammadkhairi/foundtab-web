@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Joyride, type EventData, STATUS } from 'react-joyride'
 import { useAuth } from '../../../hooks/useAuth'
 import { apiFetch } from '../../../lib/api'
@@ -11,6 +11,7 @@ import Pagination from '../../../components/Pagination'
 import { formatQty } from '../../../lib/units'
 import { useOnboardingTour } from '../../onboarding/hooks/useOnboardingTour'
 import { useT } from '../../../hooks/useT'
+import { env } from '../../../config/env'
 
 type RawMaterial = {
   id: string
@@ -28,6 +29,8 @@ type ListResponse = {
   pageSize: number
 }
 
+type ImportResult = { created: number; errors: Array<{ row: number; message: string }> }
+
 export default function RawMaterialListPage() {
   const navigate = useNavigate()
   const { token } = useAuth()
@@ -35,6 +38,11 @@ export default function RawMaterialListPage() {
   const { steps, shouldRun, onTourFinish } = useOnboardingTour('rawMaterials')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
+  const [importing, setImporting] = useState(false)
+  const [importResult, setImportResult] = useState<ImportResult | null>(null)
+  const [importError, setImportError] = useState<string | null>(null)
+  const [downloadingTemplate, setDownloadingTemplate] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   function handleSearchChange(value: string) {
     setSearch(value)
@@ -50,6 +58,51 @@ export default function RawMaterialListPage() {
     queryFn: () => apiFetch<ListResponse>(`/api/v1/raw-materials?${params}`, { token }),
     enabled: !!token,
   })
+
+  async function handleDownloadTemplate() {
+    if (!token) return
+    setDownloadingTemplate(true)
+    try {
+      const res = await fetch(`${env.VITE_API_URL}/api/v1/raw-materials/template`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      if (!res.ok) throw new Error('Download failed')
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'raw-materials-template.xlsx'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      setImportError('Failed to download template. Try again.')
+    } finally {
+      setDownloadingTemplate(false)
+    }
+  }
+
+  async function handleFileSelected(file: File) {
+    if (!token) return
+    setImporting(true)
+    setImportResult(null)
+    setImportError(null)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const result = await apiFetch<ImportResult>('/api/v1/raw-materials/import', {
+        method: 'POST',
+        body: formData,
+        token,
+      })
+      setImportResult(result)
+      void refetch()
+    } catch {
+      setImportError('Import failed. Try again.')
+    } finally {
+      setImporting(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
 
   function handleTourCallback(data: EventData) {
     const finished = ([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(data.status)
@@ -67,20 +120,83 @@ export default function RawMaterialListPage() {
         onEvent={handleTourCallback}
       />
 
+      {/* Hidden file input for XLSX upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".xlsx"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0]
+          if (file) void handleFileSelected(file)
+        }}
+      />
+
+      {/* Import result / error banner */}
+      {(importResult ?? importError) && (
+        <div className={`mx-4 mt-3 md:mx-6 rounded-lg px-4 py-3 text-sm flex gap-2 ${importError ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'}`}>
+          <div className="flex-1">
+            {importError && <p>{importError}</p>}
+            {importResult && importResult.created > 0 && (
+              <p className="font-medium">
+                {t('rawMaterials_importSuccess').replace('{count}', String(importResult.created))}
+              </p>
+            )}
+            {importResult && importResult.errors.length > 0 && (
+              <div className={importResult.created > 0 ? 'mt-1' : ''}>
+                <p className="font-medium text-amber-700">{t('rawMaterials_importErrors')}</p>
+                <ul className="mt-1 space-y-0.5 text-amber-600">
+                  {importResult.errors.map((e) => (
+                    <li key={`${e.row}-${e.message}`}>
+                      {t('rawMaterials_importRowError')
+                        .replace('{row}', String(e.row))
+                        .replace('{message}', e.message)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={() => { setImportResult(null); setImportError(null) }}
+            className="text-gray-400 hover:text-gray-600 leading-none shrink-0"
+            aria-label="Dismiss"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Mobile header */}
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
         <div className="flex items-center justify-between mb-2">
           <h1 className="text-base font-semibold text-gray-900">{t('rawMaterials_title')}</h1>
-          <button
-            data-tour="raw-material-add"
-            onClick={() => navigate('/raw-materials/new')}
-            className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center"
-            aria-label={t('rawMaterials_add')}
-          >
-            <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => void handleDownloadTemplate()}
+              disabled={downloadingTemplate}
+              className="text-xs text-brand-600 border border-brand-200 bg-brand-50 px-2 py-1 rounded-lg disabled:opacity-50"
+            >
+              {downloadingTemplate ? '…' : t('rawMaterials_downloadTemplate')}
+            </button>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={importing}
+              className="text-xs text-white bg-brand-500 px-2 py-1 rounded-lg disabled:opacity-50"
+            >
+              {importing ? t('rawMaterials_importing') : t('rawMaterials_uploadTemplate')}
+            </button>
+            <button
+              data-tour="raw-material-add"
+              onClick={() => navigate('/raw-materials/new')}
+              className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center"
+              aria-label={t('rawMaterials_add')}
+            >
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+          </div>
         </div>
         <input
           type="text"
@@ -101,6 +217,20 @@ export default function RawMaterialListPage() {
           onChange={(e) => handleSearchChange(e.target.value)}
           className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm w-64 focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
+        <button
+          onClick={() => void handleDownloadTemplate()}
+          disabled={downloadingTemplate}
+          className="text-brand-600 border border-brand-200 bg-brand-50 text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-brand-100 transition-colors whitespace-nowrap disabled:opacity-50"
+        >
+          {downloadingTemplate ? '…' : t('rawMaterials_downloadTemplate')}
+        </button>
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={importing}
+          className="bg-brand-500 text-white text-sm font-medium px-4 py-1.5 rounded-lg hover:bg-brand-600 transition-colors whitespace-nowrap disabled:opacity-50"
+        >
+          {importing ? t('rawMaterials_importing') : t('rawMaterials_uploadTemplate')}
+        </button>
         <button
           data-tour="raw-material-add"
           onClick={() => navigate('/raw-materials/new')}
