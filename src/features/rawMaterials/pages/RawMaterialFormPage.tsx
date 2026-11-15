@@ -165,10 +165,13 @@ export default function RawMaterialFormPage() {
   const [helpOpen, setHelpOpen] = useState(false)
   const [archiveDialog, setArchiveDialog] = useState<{ usageLines: string[] } | null>(null)
   const [archiving, setArchiving] = useState(false)
+  const [originalStock, setOriginalStock] = useState(0)
 
   useEffect(() => {
     if (!isEdit || !token) return
     void apiFetch<RawMaterial>(`/api/v1/raw-materials/${id}`, { token }).then((rm) => {
+      const stock = parseFloat(rm.currentStockBaseUnit ?? '0')
+      setOriginalStock(stock)
       setForm({
         name: rm.name,
         baseUnit: rm.baseUnit,
@@ -217,6 +220,15 @@ export default function RawMaterialFormPage() {
     try {
       if (isEdit) {
         await apiFetch(`/api/v1/raw-materials/${id}`, { method: 'PATCH', body: JSON.stringify(updatePayload), token: freshToken })
+        const newQty = parseFloat(form.quantityOnHand) || 0
+        const stockDelta = newQty - originalStock
+        if (Math.abs(stockDelta) > 0.0001) {
+          await apiFetch(`/api/v1/raw-materials/${id}/adjust-stock`, {
+            method: 'POST',
+            body: JSON.stringify({ quantityDelta: stockDelta, unit: form.baseUnit, notes: 'Stock adjustment' }),
+            token: freshToken,
+          })
+        }
       } else {
         const created = await apiFetch<{ id: string }>('/api/v1/raw-materials', { method: 'POST', body: JSON.stringify(createPayload), token: freshToken })
         if (initialQty > 0) {
@@ -323,7 +335,9 @@ export default function RawMaterialFormPage() {
           onChange={updateField('quantityOnHand')}
           className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
         />
-        <p className="text-xs text-gray-400 mt-1">{t('rawMaterials_quantityHint')}</p>
+        <p className="text-xs text-gray-400 mt-1">
+          {isEdit ? 'Changing this will record a stock adjustment automatically.' : t('rawMaterials_quantityHint')}
+        </p>
       </div>
 
       <div>
