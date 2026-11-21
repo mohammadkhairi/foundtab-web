@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 
 const TOKEN_KEY = 'ft-auth-token'
 
@@ -53,7 +53,7 @@ export function useAuth(): AuthState {
     return () => window.removeEventListener('visibilitychange', handleVisibility)
   }, [])
 
-  const userId = token ? decodeJwt(token)?.sub : undefined
+  const userId = useMemo(() => (token ? decodeJwt(token)?.sub : undefined), [token])
 
   return { token, userId, loading: false, refreshToken }
 }

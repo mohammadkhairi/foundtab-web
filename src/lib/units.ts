@@ -1,3 +1,8 @@
+/** Formats a number as Malaysian Ringgit, e.g. formatMyr(9.5) → "RM 9.50" */
+export function formatMyr(value: number): string {
+  return `RM ${value.toFixed(2)}`
+}
+
 /** Returns a human-readable quantity string, auto-upgrading small units when sensible. */
 export function formatQty(value: number, unit: string): string {
   const u = unit.toLowerCase().trim()

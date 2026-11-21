@@ -246,13 +246,15 @@ export default function ProductionFormPage() {
     setSaving(true)
     setError(null)
     try {
-      for (const row of enabled) {
-        await apiFetch('/api/v1/productions', {
-          method: 'POST',
-          body: JSON.stringify({ recipeId: row.recipeId, batchCount: parseFloat(row.batchCount), orderId: fromOrderId }),
-          token: freshToken,
-        })
-      }
+      await Promise.all(
+        enabled.map((row) =>
+          apiFetch('/api/v1/productions', {
+            method: 'POST',
+            body: JSON.stringify({ recipeId: row.recipeId, batchCount: parseFloat(row.batchCount), orderId: fromOrderId }),
+            token: freshToken,
+          }),
+        ),
+      )
       void queryClient.invalidateQueries({ queryKey: ['productions'] })
       void queryClient.invalidateQueries({ queryKey: ['rawMaterials'] })
       void queryClient.invalidateQueries({ queryKey: ['products'] })

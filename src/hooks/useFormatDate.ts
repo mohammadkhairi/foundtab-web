@@ -8,6 +8,10 @@ export function useFormatDate() {
     return new Date(dateStr).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })
   }
 
+  function formatDateOrDash(dateStr: string | null | undefined): string {
+    return dateStr ? formatDate(dateStr) : '—'
+  }
+
   function formatDateTime(iso: string): string {
     return new Date(iso).toLocaleString(locale, {
       day: 'numeric', month: 'short', year: 'numeric',
@@ -15,5 +19,5 @@ export function useFormatDate() {
     })
   }
 
-  return { formatDate, formatDateTime }
+  return { formatDate, formatDateOrDash, formatDateTime }
 }
