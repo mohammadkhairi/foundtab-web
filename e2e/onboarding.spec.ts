@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test'
-import { clerk, setupClerkTestingToken } from '@clerk/testing/playwright'
-import { signInOnly, TEST_EMAIL } from './helpers'
+import { signInOnly } from './helpers'
 
 test.describe('Onboarding flow', () => {
   test.setTimeout(60_000)
@@ -48,11 +47,7 @@ test.describe('Onboarding flow', () => {
   })
 
   test('full onboarding flow — lang → org → pwa skip → notifications skip → /dashboard', async ({ page }) => {
-    await setupClerkTestingToken({ page })
-    await page.goto('/')
-    await page.waitForLoadState('networkidle')
-    await clerk.signIn({ page, emailAddress: TEST_EMAIL })
-    await page.waitForFunction(() => Boolean((window as any).Clerk?.user?.id), { timeout: 30_000 })
+    await signInOnly(page)
 
     await page.evaluate(() => localStorage.removeItem('ft-onboarding-done'))
 

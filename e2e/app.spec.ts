@@ -1,44 +1,6 @@
-import { test, expect, type Page } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import * as fs from 'fs'
-import { clerk, setupClerkTestingToken } from '@clerk/testing/playwright'
-
-const TEST_EMAIL = 'mohammadkhairibinali@gmail.com'
-
-async function signIn(page: Page) {
-  // Set up route interceptor BEFORE navigation so FAPI requests carry the testing token
-  await setupClerkTestingToken({ page })
-  await page.goto('/')
-  await page.waitForLoadState('networkidle')
-
-  // Sign in via ticket strategy — bypasses email verification entirely
-  await clerk.signIn({ page, emailAddress: TEST_EMAIL })
-
-  // clerk.signIn has a timing bug: waitForFunction uses !== null but user starts as undefined.
-  // Explicitly wait for the session to be truly active (user.id is truthy).
-  await page.waitForFunction(
-    () => Boolean((window as any).Clerk?.user?.id),
-    { timeout: 30_000 },
-  )
-
-  // Ensure the test org exists (idempotent — backend returns 200 if already created)
-  await page.evaluate(async () => {
-    const token = await (window as any).Clerk?.session?.getToken()
-    if (!token) return
-    await fetch('/api/v1/orgs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ name: 'E2E Test Business', industry: 'food_beverage' }),
-    })
-  })
-
-  // Mark onboarding as done so RootRedirect goes to /dashboard, not /onboarding
-  await page.evaluate(() => localStorage.setItem('ft-onboarding-done', '1'))
-
-  // Navigate to a known authenticated page to force a full session reload from cookies.
-  // Without this the React state may not have settled (test 1 URL check races sign-in completion).
-  await page.goto('/dashboard')
-  await page.waitForLoadState('networkidle')
-}
+import { signIn } from './helpers'
 
 test.describe('Authenticated app flows', () => {
   test.setTimeout(60_000)
@@ -47,7 +9,6 @@ test.describe('Authenticated app flows', () => {
     await signIn(page)
     const url = page.url()
     expect(url).not.toContain('/sign-in')
-    // Should be on some authenticated page
     await expect(page.locator('body')).not.toContainText('Internal server error')
     await page.screenshot({ path: '/tmp/e2e-home.png', fullPage: true })
   })
@@ -56,7 +17,6 @@ test.describe('Authenticated app flows', () => {
     await signIn(page)
     await page.goto('/raw-materials')
     await page.waitForLoadState('networkidle')
-    // Should not show error state
     await expect(page.locator('body')).not.toContainText('Something went wrong')
     await page.screenshot({ path: '/tmp/e2e-materials.png', fullPage: true })
   })
@@ -104,7 +64,6 @@ test.describe('Authenticated app flows', () => {
   test('Receipt scan (OCR) returns mock data without error', async ({ page }) => {
     await signIn(page)
 
-    // Intercept OCR endpoint — items must use `itemName` to match OcrItem type
     await page.route('**/api/v1/uploads/receipt-ocr', (route) =>
       route.fulfill({
         status: 200,
@@ -121,7 +80,6 @@ test.describe('Authenticated app flows', () => {
         }),
       }),
     )
-    // Intercept OCR draft endpoint (new DB-backed draft, may not exist yet)
     await page.route('**/api/v1/purchases/ocr-draft', (route) => {
       if (route.request().method() === 'GET') {
         return route.fulfill({ status: 200, contentType: 'application/json', body: 'null' })
@@ -130,7 +88,6 @@ test.describe('Authenticated app flows', () => {
     })
 
     await page.goto('/purchases/scan')
-    // The file input is hidden (CSS class="hidden") — wait for it to be attached to DOM
     await page.waitForSelector('input[type="file"]', { state: 'attached', timeout: 15_000 })
 
     const fakeJpeg = Buffer.from([
@@ -142,7 +99,6 @@ test.describe('Authenticated app flows', () => {
 
     await page.locator('input[type="file"]').setInputFiles('/tmp/test-receipt.jpg')
 
-    // Wait for OCR to complete and summary phase to appear (supplier name input)
     await page.waitForFunction(
       () => Array.from(document.querySelectorAll('input[type="text"]')).some(
         (el) => (el as HTMLInputElement).value.includes('Pasar Borong'),
@@ -158,7 +114,6 @@ test.describe('Authenticated app flows', () => {
     await page.goto('/raw-materials/new')
     await page.waitForLoadState('networkidle')
 
-    // Use the mobile form (md:hidden = visible at mobile viewport)
     const mobileForm = page.locator('form.md\\:hidden')
     await mobileForm.locator('#rm-name').fill(`E2E Material ${Date.now()}`)
     await mobileForm.locator('#qty').fill('50')
@@ -168,7 +123,6 @@ test.describe('Authenticated app flows', () => {
 
     await mobileForm.locator('button[type="submit"]').click()
 
-    // Should redirect back to /raw-materials
     await page.waitForURL('**/raw-materials', { timeout: 15_000 })
     await page.screenshot({ path: '/tmp/e2e-rm-after-save.png', fullPage: true })
   })
@@ -184,9 +138,8 @@ test.describe('Authenticated app flows', () => {
   test('Create an order and view detail', async ({ page }) => {
     await signIn(page)
 
-    // Create order via API — avoids SearchableSelect interaction in headless
     const orderId = await page.evaluate(async () => {
-      const token = await (window as any).Clerk?.session?.getToken()
+      const token = window.localStorage.getItem('ft-auth-token')
       if (!token) return null
       const res = await fetch('/api/v1/orders', {
         method: 'POST',
@@ -206,13 +159,11 @@ test.describe('Authenticated app flows', () => {
 
     expect(orderId).toBeTruthy()
 
-    // Navigate to the order list — verifies the list page works
     await page.goto('/orders')
     await page.waitForLoadState('networkidle')
     await expect(page.locator('body')).not.toContainText('Something went wrong')
     await page.screenshot({ path: '/tmp/e2e-order-form.png', fullPage: true })
 
-    // Navigate to the created order detail
     await page.goto(`/orders/${orderId as string}`)
     await page.waitForLoadState('networkidle')
     await page.screenshot({ path: '/tmp/e2e-order-detail.png', fullPage: true })

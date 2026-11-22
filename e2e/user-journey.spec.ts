@@ -52,7 +52,7 @@ test.describe('Core user journeys — beginner user story', () => {
     await signIn(page)
 
     const orderId = await page.evaluate(async () => {
-      const token = await (window as any).Clerk?.session?.getToken()
+      const token = window.localStorage.getItem('ft-auth-token')
       if (!token) return null
       const res = await fetch('/api/v1/orders', {
         method: 'POST',
@@ -95,7 +95,7 @@ test.describe('Core user journeys — beginner user story', () => {
     await signIn(page)
 
     const orderId = await page.evaluate(async () => {
-      const token = await (window as any).Clerk?.session?.getToken()
+      const token = window.localStorage.getItem('ft-auth-token')
       if (!token) return null
       const res = await fetch('/api/v1/orders', {
         method: 'POST',
@@ -132,7 +132,7 @@ test.describe('Core user journeys — beginner user story', () => {
 
     // Verify via API that the order status is now CANCELLED
     const status = await page.evaluate(async (id) => {
-      const token = await (window as any).Clerk?.session?.getToken()
+      const token = window.localStorage.getItem('ft-auth-token')
       if (!token) return null
       const res = await fetch(`/api/v1/orders/${id}`, {
         headers: { Authorization: `Bearer ${token}` },

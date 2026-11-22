@@ -1,5 +1,3 @@
-import { clerkSetup } from '@clerk/testing/playwright'
-
 export default async function globalSetup() {
-  await clerkSetup()
+  // App uses custom JWT auth — no external auth setup needed
 }

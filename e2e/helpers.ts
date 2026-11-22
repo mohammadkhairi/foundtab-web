@@ -1,42 +1,27 @@
-import { type Page } from '@playwright/test'
-import { clerk, setupClerkTestingToken } from '@clerk/testing/playwright'
+import { expect, type Page } from '@playwright/test'
 
-export const TEST_EMAIL = 'mohammadkhairibinali@gmail.com'
+export const TEST_EMAIL = process.env.TEST_EMAIL ?? 'e2e-test@foundtab.com'
+const TEST_PASSWORD = process.env.TEST_PASSWORD ?? ''
+
+async function doLogin(page: Page) {
+  await page.goto('/sign-in')
+  await page.waitForLoadState('networkidle')
+  await expect(page.locator('input[type="email"]')).toBeVisible({ timeout: 15_000 })
+  await page.locator('input[type="email"]').fill(TEST_EMAIL)
+  await page.locator('input[type="password"]').fill(TEST_PASSWORD)
+  await page.locator('button[type="submit"]').click()
+  await page.waitForURL(url => !url.toString().includes('/sign-in'), { timeout: 20_000 })
+}
 
 export async function signIn(page: Page) {
-  await setupClerkTestingToken({ page })
-  await page.goto('/')
-  await page.waitForLoadState('networkidle')
-  await clerk.signIn({ page, emailAddress: TEST_EMAIL })
-  await page.waitForFunction(
-    () => Boolean((window as any).Clerk?.user?.id),
-    { timeout: 30_000 },
-  )
-  await page.evaluate(async () => {
-    const token = await (window as any).Clerk?.session?.getToken()
-    if (!token) return
-    await fetch('/api/v1/orgs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ name: 'E2E Test Business', industry: 'food_beverage' }),
-    })
-  })
+  await doLogin(page)
   await page.evaluate(() => localStorage.setItem('ft-onboarding-done', '1'))
   await page.goto('/dashboard')
   await page.waitForLoadState('networkidle')
 }
 
-// Signs in only — does NOT create org or set onboarding flag.
-// Use for onboarding flow tests that need a clean state.
 export async function signInOnly(page: Page) {
-  await setupClerkTestingToken({ page })
-  await page.goto('/')
-  await page.waitForLoadState('networkidle')
-  await clerk.signIn({ page, emailAddress: TEST_EMAIL })
-  await page.waitForFunction(
-    () => Boolean((window as any).Clerk?.user?.id),
-    { timeout: 30_000 },
-  )
+  await doLogin(page)
 }
 
 type ModuleOverride = Partial<{
@@ -45,7 +30,6 @@ type ModuleOverride = Partial<{
   accessible: boolean
 }>
 
-// Builds a complete /api/v1/feature-flags response with optional per-module overrides.
 export function buildFlagsResponse(overrides: Record<string, ModuleOverride> = {}) {
   const defaults = [
     { key: 'dashboard',    label: 'Summary Dashboard', requiredTier: 'STARTER', flagEnabled: true,  tierAccessible: true,  accessible: true },
