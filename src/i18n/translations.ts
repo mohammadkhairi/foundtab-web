@@ -25,6 +25,16 @@ const en = {
   auth_tagline: 'Manage your kitchen business easily',
   auth_signupTagline: 'Register a free account now',
   auth_signOut: 'Sign out',
+  auth_signInHeading: 'Sign in to your account',
+  auth_emailLabel: 'Email',
+  auth_emailPlaceholder: 'you@example.com',
+  auth_passwordLabel: 'Password',
+  auth_signInButton: 'Sign in',
+  auth_signingIn: 'Signing in…',
+  auth_noAccountFooter: 'No account? Contact your administrator to get access.',
+  auth_errorInvalidCredentials: 'Incorrect email or password.',
+  auth_errorServer: 'Something went wrong. Please try again.',
+  auth_errorNetwork: 'Could not connect to server. Please try again.',
 
   // Common
   common_back: 'Back',
@@ -634,6 +644,16 @@ const ms: Record<keyof typeof en, string> = {
   auth_tagline: 'Urus bisnes dapur anda dengan mudah',
   auth_signupTagline: 'Daftar akaun percuma sekarang',
   auth_signOut: 'Log keluar',
+  auth_signInHeading: 'Log masuk ke akaun anda',
+  auth_emailLabel: 'E-mel',
+  auth_emailPlaceholder: 'anda@contoh.com',
+  auth_passwordLabel: 'Kata laluan',
+  auth_signInButton: 'Log masuk',
+  auth_signingIn: 'Sedang log masuk…',
+  auth_noAccountFooter: 'Tiada akaun? Hubungi pentadbir anda untuk mendapatkan akses.',
+  auth_errorInvalidCredentials: 'E-mel atau kata laluan tidak betul.',
+  auth_errorServer: 'Ralat berlaku. Sila cuba lagi.',
+  auth_errorNetwork: 'Tidak dapat sambung ke pelayan. Sila cuba lagi.',
 
   // Common
   common_back: 'Kembali',

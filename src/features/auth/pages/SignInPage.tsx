@@ -22,7 +22,12 @@ export default function SignInPage() {
       })
       const data = (await res.json()) as { token?: string; message?: string }
       if (!res.ok) {
-        setError(data.message ?? 'Invalid email or password')
+        const msg = data.message?.toUpperCase()
+        if (msg === 'UNAUTHORISED' || msg === 'UNAUTHORIZED' || res.status === 401) {
+          setError(t('auth_errorInvalidCredentials'))
+        } else {
+          setError(t('auth_errorServer'))
+        }
         return
       }
       if (data.token) {
@@ -30,7 +35,7 @@ export default function SignInPage() {
         window.location.replace('/')
       }
     } catch {
-      setError('Could not connect to server. Please try again.')
+      setError(t('auth_errorNetwork'))
     } finally {
       setLoading(false)
     }
@@ -44,22 +49,22 @@ export default function SignInPage() {
       </div>
 
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-base font-semibold text-gray-900 mb-5">Sign in to your account</h2>
+        <h2 className="text-base font-semibold text-gray-900 mb-5">{t('auth_signInHeading')}</h2>
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{t('auth_emailLabel')}</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              placeholder={t('auth_emailPlaceholder')}
               required
               autoFocus
               className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-400"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Password</label>
+            <label className="block text-xs font-medium text-gray-600 mb-1">{t('auth_passwordLabel')}</label>
             <input
               type="password"
               value={password}
@@ -75,13 +80,13 @@ export default function SignInPage() {
             disabled={loading}
             className="w-full bg-brand-500 text-white font-semibold py-2.5 rounded-lg text-sm hover:bg-brand-600 transition-colors disabled:opacity-60"
           >
-            {loading ? 'Signing in…' : 'Sign in'}
+            {loading ? t('auth_signingIn') : t('auth_signInButton')}
           </button>
         </form>
       </div>
 
       <p className="mt-4 text-xs text-gray-400 text-center">
-        No account? Contact your administrator to get access.
+        {t('auth_noAccountFooter')}
       </p>
     </div>
   )
