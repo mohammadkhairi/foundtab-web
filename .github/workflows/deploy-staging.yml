@@ -3,12 +3,15 @@ name: Deploy to Staging
 on:
   workflow_dispatch:
 
+concurrency:
+  group: web-staging-deploy
+  cancel-in-progress: true
+
 jobs:
   deploy:
     name: Deploy to Vercel (staging)
     runs-on: ubuntu-latest
     environment: staging
-    if: github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v4
@@ -22,8 +25,22 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
-      - name: Deploy to Vercel (staging)
-        run: vercel deploy --token ${{ secrets.VERCEL_TOKEN }} --env VITE_APP_ENV=staging
+      - name: Authenticate Vercel CLI
+        run: |
+          mkdir -p /tmp/vercel-config
+          echo '${{ secrets.VERCEL_AUTH_JSON }}' > /tmp/vercel-config/auth.json
+
+      - name: Deploy to Vercel (staging preview)
+        id: deploy
+        run: |
+          url=$(vercel -Q /tmp/vercel-config deploy --cwd . --env VITE_APP_ENV=staging)
+          echo "url=$url" >> $GITHUB_OUTPUT
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Alias to staging-app.foundtab.com
+        run: vercel -Q /tmp/vercel-config alias set ${{ steps.deploy.outputs.url }} staging-app.foundtab.com --scope foundtab
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
