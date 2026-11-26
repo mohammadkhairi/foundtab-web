@@ -3,12 +3,15 @@ name: Deploy to Production
 on:
   workflow_dispatch:
 
+concurrency:
+  group: web-production-deploy
+  cancel-in-progress: false
+
 jobs:
   deploy:
     name: Deploy to Vercel (production)
     runs-on: ubuntu-latest
     environment: production
-    if: github.ref == 'refs/heads/main'
 
     steps:
       - uses: actions/checkout@v4
@@ -22,8 +25,13 @@ jobs:
       - name: Install Vercel CLI
         run: npm install -g vercel
 
+      - name: Authenticate Vercel CLI
+        run: |
+          mkdir -p /tmp/vercel-config
+          echo '${{ secrets.VERCEL_AUTH_JSON }}' > /tmp/vercel-config/auth.json
+
       - name: Deploy to Vercel (production)
-        run: vercel deploy --prod --token ${{ secrets.VERCEL_TOKEN }}
+        run: vercel -Q /tmp/vercel-config deploy --prod --cwd .
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
