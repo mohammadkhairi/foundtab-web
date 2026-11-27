@@ -67,25 +67,27 @@ export default function RecipeFormPage() {
     const productMap = new Map((productsData?.items ?? []).map((p) => [p.id, p]))
     void apiFetch<{
       id: string; name: string; type: string; notes?: string
-      ingredients: any[]; outputs: any[]; rawMaterialOutputs: any[]
+      ingredients: { rawMaterialId: string; quantityBaseUnit: string; unit?: string; description?: string }[]
+      outputs: { productId: string; quantityPerBatch: string; unit?: string }[]
+      rawMaterialOutputs: { rawMaterialId: string; quantityPerBatch: string; unit?: string }[]
     }>(`/api/v1/recipes/${id}`, { token }).then((recipe) => {
       setName(recipe.name)
       setRecipeType((recipe.type as RecipeType) ?? 'PRODUCTION')
       setNotes(recipe.notes ?? '')
-      setIngredients(recipe.ingredients.map((i: any) => ({
+      setIngredients(recipe.ingredients.map((i) => ({
         rawMaterialId: i.rawMaterialId,
         name: materialMap.get(i.rawMaterialId)?.name ?? i.rawMaterialId,
         quantity: String(parseFloat(i.quantityBaseUnit) || 0),
         unit: i.unit ?? materialMap.get(i.rawMaterialId)?.baseUnit ?? '',
         description: i.description ?? '',
       })))
-      setOutputs(recipe.outputs.map((o: any) => ({
+      setOutputs(recipe.outputs.map((o) => ({
         productId: o.productId,
         name: productMap.get(o.productId)?.name ?? o.productId,
         quantityPerBatch: String(parseFloat(o.quantityPerBatch) || 1),
         unit: o.unit ?? productMap.get(o.productId)?.unit ?? '',
       })))
-      setRawMaterialOutputs((recipe.rawMaterialOutputs ?? []).map((o: any) => ({
+      setRawMaterialOutputs((recipe.rawMaterialOutputs ?? []).map((o) => ({
         rawMaterialId: o.rawMaterialId,
         name: materialMap.get(o.rawMaterialId)?.name ?? o.rawMaterialId,
         quantityPerBatch: String(parseFloat(o.quantityPerBatch) || 1),
@@ -182,7 +184,7 @@ export default function RecipeFormPage() {
 
   if (loading) return <LoadingSpinner />
 
-  const materialPickerContent = (items: typeof filteredMaterials, onSelect: (m: RawMaterial) => void, searchVal: string, onSearch: (v: string) => void) => (
+  const materialPickerContent = ({ items, onSelect, searchVal, onSearch }: { items: typeof filteredMaterials; onSelect: (m: RawMaterial) => void; searchVal: string; onSearch: (v: string) => void }) => (
     <>
       <div className="p-3 border-b border-gray-100">
         <input type="text" value={searchVal} onChange={(e) => onSearch(e.target.value)}
@@ -329,7 +331,7 @@ export default function RecipeFormPage() {
               </button>
               {showIngredientPicker && (
                 <div className="hidden md:block absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-gray-100 shadow-card shadow-lg z-30 overflow-hidden">
-                  {materialPickerContent(filteredMaterials, addIngredient, search, setSearch)}
+                  {materialPickerContent({ items: filteredMaterials, onSelect: addIngredient, searchVal: search, onSearch: setSearch })}
                 </div>
               )}
             </div>
@@ -430,7 +432,7 @@ export default function RecipeFormPage() {
                 </button>
                 {showRmOutputPicker && (
                   <div className="hidden md:block absolute top-full left-0 right-0 mt-1 bg-white rounded-xl border border-gray-100 shadow-card shadow-lg z-30 overflow-hidden">
-                    {materialPickerContent(filteredRmOutputMaterials, addRmOutput, rmOutputSearch, setRmOutputSearch)}
+                    {materialPickerContent({ items: filteredRmOutputMaterials, onSelect: addRmOutput, searchVal: rmOutputSearch, onSearch: setRmOutputSearch })}
                   </div>
                 )}
               </div>
@@ -459,7 +461,7 @@ export default function RecipeFormPage() {
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
-            {materialPickerContent(filteredMaterials, addIngredient, search, setSearch)}
+            {materialPickerContent({ items: filteredMaterials, onSelect: addIngredient, searchVal: search, onSearch: setSearch })}
           </div>
         </div>
       )}
@@ -487,7 +489,7 @@ export default function RecipeFormPage() {
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
               </button>
             </div>
-            {materialPickerContent(filteredRmOutputMaterials, addRmOutput, rmOutputSearch, setRmOutputSearch)}
+            {materialPickerContent({ items: filteredRmOutputMaterials, onSelect: addRmOutput, searchVal: rmOutputSearch, onSearch: setRmOutputSearch })}
           </div>
         </div>
       )}

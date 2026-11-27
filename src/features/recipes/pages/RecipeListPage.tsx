@@ -11,7 +11,7 @@ import { useT } from '../../../hooks/useT'
 
 type RecipeOutput = { productId: string; quantityPerBatch: string; unit?: string }
 type RecipeIngredient = { rawMaterialId: string; quantityBaseUnit: string }
-type Recipe = { id: string; name: string; ingredients: RecipeIngredient[]; outputs: RecipeOutput[] }
+type Recipe = { id: string; name: string; type?: string; ingredients: RecipeIngredient[]; outputs: RecipeOutput[] }
 
 type ListResponse = {
   items: Recipe[]
@@ -281,7 +281,7 @@ export default function RecipeListPage() {
                     >
                       <td className="px-4 py-3 font-medium text-gray-900">{recipe.name}</td>
                       <td className="px-4 py-3 text-gray-500">
-                        {(recipe as any).type === 'YIELD_BREAKDOWN' ? (
+                        {recipe.type === 'YIELD_BREAKDOWN' ? (
                           <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">Yield Breakdown</span>
                         ) : (
                           <span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full font-medium">Production</span>

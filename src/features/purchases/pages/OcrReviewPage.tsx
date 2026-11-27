@@ -46,7 +46,7 @@ function getSupplierMemory(): Record<string, string> {
   try { return JSON.parse(localStorage.getItem(MAPPING_KEY) ?? '{}') } catch { return {} }
 }
 
-function saveMapping(supplierName: string, itemName: string, materialId: string) {
+function saveMapping({ supplierName, itemName, materialId }: { supplierName: string; itemName: string; materialId: string }) {
   const mem = getSupplierMemory()
   mem[`${supplierName}||${itemName.toLowerCase()}`] = materialId
   try { localStorage.setItem(MAPPING_KEY, JSON.stringify(mem)) } catch {}
@@ -306,7 +306,7 @@ export default function OcrReviewPage() {
     )
   }
 
-  function linkToExisting(idx: number, materialId: string, typedName?: string) {
+  function linkToExisting({ idx, materialId, typedName }: { idx: number; materialId: string; typedName?: string }) {
     const item = unmatchedItems[idx]
     if (!item) return
     const globalIdx = reviewItems.findIndex((r) => r === item)
@@ -319,7 +319,7 @@ export default function OcrReviewPage() {
       )
     } else {
       const mat = materials.find((m) => m.id === materialId)
-      saveMapping(fields.supplierName, item.itemName, materialId)
+      saveMapping({ supplierName: fields.supplierName, itemName: item.itemName, materialId })
       setReviewItems((prev) =>
         prev.map((r, i) =>
           i === globalIdx
@@ -355,7 +355,7 @@ export default function OcrReviewPage() {
     setEditingUnitIdx(null)
   }
 
-  function updateSplit(confirmIdx: number, splitIdx: number, patch: Partial<SplitItem>) {
+  function updateSplit({ confirmIdx, splitIdx, patch }: { confirmIdx: number; splitIdx: number; patch: Partial<SplitItem> }) {
     const item = confirmedItems[confirmIdx]
     if (!item) return
     const globalIdx = reviewItems.indexOf(item)
@@ -505,7 +505,7 @@ export default function OcrReviewPage() {
   function handleMaterialPanelClick(material: RawMaterial) {
     if (!currentUnmatchedItem) return
     const globalIdx = reviewItems.findIndex((r) => r === currentUnmatchedItem)
-    saveMapping(fields.supplierName, currentUnmatchedItem.itemName, material.id)
+    saveMapping({ supplierName: fields.supplierName, itemName: currentUnmatchedItem.itemName, materialId: material.id })
     setReviewItems((prev) =>
       prev.map((r, i) =>
         i === globalIdx
@@ -777,7 +777,7 @@ export default function OcrReviewPage() {
                               <button
                                 key={m.id}
                                 type="button"
-                                onClick={() => linkToExisting(reviewIdx, m.id)}
+                                onClick={() => linkToExisting({ idx: reviewIdx, materialId: m.id })}
                                 className="px-3 py-1.5 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-medium rounded-full hover:bg-brand-100 transition-colors"
                               >
                                 {m.name}
@@ -788,7 +788,7 @@ export default function OcrReviewPage() {
                       )}
                       <SearchableSelect
                         value={currentUnmatchedItem.mappedMaterialId ?? '__new__'}
-                        onChange={(id, typedName) => linkToExisting(reviewIdx, id, typedName)}
+                        onChange={(id, typedName) => linkToExisting({ idx: reviewIdx, materialId: id, typedName })}
                         options={materials.map((m) => ({ id: m.id, label: m.name, sublabel: m.baseUnit }))}
                         createOption={{ id: '__new__', label: (q) => q ? `Add as new: "${q.toUpperCase()}" →` : 'Add as new item →' }}
                         placeholder="Type to search..."
@@ -926,10 +926,10 @@ export default function OcrReviewPage() {
                                     value={s.mappedMaterialId ?? '__new__'}
                                     onChange={(id, typedName) => {
                                       if (id === '__new__') {
-                                        updateSplit(i, si, { mappedMaterialId: null, mappedMaterialName: typedName?.trim().toUpperCase() ?? '' })
+                                        updateSplit({ confirmIdx: i, splitIdx: si, patch: { mappedMaterialId: null, mappedMaterialName: typedName?.trim().toUpperCase() ?? '' } })
                                       } else {
                                         const mat = materials.find((m) => m.id === id)
-                                        updateSplit(i, si, { mappedMaterialId: id, mappedMaterialName: mat?.name ?? '' })
+                                        updateSplit({ confirmIdx: i, splitIdx: si, patch: { mappedMaterialId: id, mappedMaterialName: mat?.name ?? '' } })
                                       }
                                     }}
                                     options={materials.map((m) => ({ id: m.id, label: m.name, sublabel: m.baseUnit }))}
@@ -954,12 +954,12 @@ export default function OcrReviewPage() {
                                   min="0"
                                   step="any"
                                   value={s.quantity}
-                                  onChange={(e) => updateSplit(i, si, { quantity: e.target.value })}
+                                  onChange={(e) => updateSplit({ confirmIdx: i, splitIdx: si, patch: { quantity: e.target.value } })}
                                   placeholder="Qty"
                                   className="w-16 border border-gray-300 rounded-lg px-2 py-1.5 text-xs text-center focus:outline-none focus:ring-1 focus:ring-brand-400"
                                 />
                                 <div className="flex-1">
-                                  <UnitSelect value={s.unit} onChange={(u) => updateSplit(i, si, { unit: u })} />
+                                  <UnitSelect value={s.unit} onChange={(u) => updateSplit({ confirmIdx: i, splitIdx: si, patch: { unit: u } })} />
                                 </div>
                               </div>
                             </div>
