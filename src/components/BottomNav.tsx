@@ -129,7 +129,7 @@ export default function BottomNav() {
 
   const PRIMARY: NavItem[] = [
     { path: '/dashboard', label: t('nav_home'), icon: <HomeIcon />, moduleKey: 'dashboard' },
-    { path: '/raw-materials', label: t('nav_materials'), icon: <BoxIcon />, moduleKey: 'rawMaterials' },
+    { path: '/purchases', label: t('nav_purchases'), icon: <ShoppingCartIcon />, moduleKey: 'purchases' },
     { path: '/orders', label: t('nav_orders'), icon: <ShoppingBagIcon />, moduleKey: 'orders' },
   ]
 
