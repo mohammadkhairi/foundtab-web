@@ -22,7 +22,7 @@ const en = {
   nav_other: 'Other',
 
   // Auth
-  auth_tagline: 'Manage your kitchen business easily',
+  auth_tagline: 'Run your production business without the chaos',
   auth_signupTagline: 'Register a free account now',
   auth_signOut: 'Sign out',
 
@@ -631,7 +631,7 @@ const ms: Record<keyof typeof en, string> = {
   nav_other: 'Lain-lain',
 
   // Auth
-  auth_tagline: 'Urus bisnes dapur anda dengan mudah',
+  auth_tagline: 'Urus operasi pengeluaran anda tanpa keliru',
   auth_signupTagline: 'Daftar akaun percuma sekarang',
   auth_signOut: 'Log keluar',
 
