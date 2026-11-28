@@ -563,7 +563,7 @@ export default function OcrReviewPage() {
             >
               {uploading ? (
                 <div className="space-y-2">
-                  <div className="w-10 h-10 rounded-full border-2 border-brand-400 border-t-transparent animate-spin mx-auto" />
+                  <div className="w-10 h-10 rounded-full border-[3px] border-slate-200 border-t-brand-500 animate-spin mx-auto" />
                   <p className="text-sm text-gray-500">{t('purchases_extracting')}</p>
                 </div>
               ) : (
@@ -1284,7 +1284,7 @@ export default function OcrReviewPage() {
         {/* Saving phase */}
         {phase === 'saving' && (
           <div className="flex flex-col items-center justify-center py-16 space-y-3">
-            <div className="w-10 h-10 rounded-full border-2 border-brand-400 border-t-transparent animate-spin" />
+            <div className="w-10 h-10 rounded-full border-[3px] border-slate-200 border-t-brand-500 animate-spin" />
             <p className="text-sm text-gray-500">{t('common_saving')}</p>
           </div>
         )}
