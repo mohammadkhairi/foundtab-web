@@ -9,8 +9,7 @@ export default defineConfig({
     baseURL: 'https://staging-app.foundtab.com',
     headless: true,
     viewport: { width: 390, height: 844 },
-    // Allow extra time for cold starts on Vercel/Railway
-    navigationTimeout: 30_000,
+navigationTimeout: 30_000,
     actionTimeout: 20_000,
   },
   globalSetup: './e2e/globalSetup.ts',

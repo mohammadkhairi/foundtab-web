@@ -40,8 +40,8 @@ export default function SignInPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-gray-900">FoundTab</h1>
-        <p className="text-gray-500 mt-1 text-sm">{t('auth_tagline')}</p>
+        <img src="/logo.png" alt="FoundTab" className="h-14 mx-auto mb-3 object-contain" />
+        <p className="text-gray-500 text-sm">{t('auth_tagline')}</p>
       </div>
 
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-sm border border-gray-100 p-6">

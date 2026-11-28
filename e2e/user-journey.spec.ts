@@ -51,24 +51,21 @@ test.describe('Core user journeys — beginner user story', () => {
   test('order status advances from PENDING → CONFIRMED via the detail page', async ({ page }) => {
     await signIn(page)
 
-    const orderId = await page.evaluate(async () => {
-      const token = window.localStorage.getItem('ft-auth-token')
-      if (!token) return null
-      const res = await fetch('/api/v1/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          customerName: `E2E Journey ${Date.now()}`,
-          customerPhone: '0123456789',
-          channel: 'MANUAL',
-          covers: 1,
-          items: [{ itemType: 'CATALOGUE', itemName: 'Test Item', quantity: 1, pricePerUnit: 10.00, totalPrice: 10.00 }],
-          totalAmount: 10.00,
-        }),
-      })
-      const data = await res.json() as { id?: string }
-      return data.id ?? null
+    const apiUrl = process.env.TEST_API_URL ?? process.env.VITE_API_URL ?? ''
+    const token = await page.evaluate(() => window.localStorage.getItem('ft-auth-token'))
+    const orderResp = await page.request.post(`${apiUrl}/api/v1/orders`, {
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      data: {
+        customerName: `E2E Journey ${Date.now()}`,
+        customerPhone: '0123456789',
+        channel: 'MANUAL',
+        covers: 1,
+        items: [{ itemType: 'CATALOGUE', itemName: 'Test Item', quantity: 1, pricePerUnit: 10.00, totalPrice: 10.00 }],
+        totalAmount: 10.00,
+      },
     })
+    const orderData = await orderResp.json() as { id?: string }
+    const orderId = orderData.id ?? null
 
     expect(orderId).toBeTruthy()
 
@@ -94,24 +91,21 @@ test.describe('Core user journeys — beginner user story', () => {
   test('order can be cancelled and shows cancelled status', async ({ page }) => {
     await signIn(page)
 
-    const orderId = await page.evaluate(async () => {
-      const token = window.localStorage.getItem('ft-auth-token')
-      if (!token) return null
-      const res = await fetch('/api/v1/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({
-          customerName: `E2E Cancel ${Date.now()}`,
-          customerPhone: '0123456789',
-          channel: 'MANUAL',
-          covers: 1,
-          items: [{ itemType: 'CATALOGUE', itemName: 'Cancel Test', quantity: 1, pricePerUnit: 5.00, totalPrice: 5.00 }],
-          totalAmount: 5.00,
-        }),
-      })
-      const data = await res.json() as { id?: string }
-      return data.id ?? null
+    const apiUrl = process.env.TEST_API_URL ?? process.env.VITE_API_URL ?? ''
+    const token = await page.evaluate(() => window.localStorage.getItem('ft-auth-token'))
+    const orderResp = await page.request.post(`${apiUrl}/api/v1/orders`, {
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      data: {
+        customerName: `E2E Cancel ${Date.now()}`,
+        customerPhone: '0123456789',
+        channel: 'MANUAL',
+        covers: 1,
+        items: [{ itemType: 'CATALOGUE', itemName: 'Cancel Test', quantity: 1, pricePerUnit: 5.00, totalPrice: 5.00 }],
+        totalAmount: 5.00,
+      },
     })
+    const orderData = await orderResp.json() as { id?: string }
+    const orderId = orderData.id ?? null
 
     expect(orderId).toBeTruthy()
 
@@ -128,18 +122,14 @@ test.describe('Core user journeys — beginner user story', () => {
     await page.locator('.fixed.inset-0').locator('button', { hasText: /Cancel order/i }).click()
 
     // Wait for the modal to close (happens after API call completes)
-    await page.locator('.fixed.inset-0').waitFor({ state: 'hidden', timeout: 10_000 })
+    await page.locator('.fixed.inset-0').waitFor({ state: 'hidden', timeout: 20_000 })
 
     // Verify via API that the order status is now CANCELLED
-    const status = await page.evaluate(async (id) => {
-      const token = window.localStorage.getItem('ft-auth-token')
-      if (!token) return null
-      const res = await fetch(`/api/v1/orders/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      const data = await res.json() as { status?: string }
-      return data.status ?? null
-    }, orderId as string)
+    const statusResp = await page.request.get(`${apiUrl}/api/v1/orders/${orderId as string}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const statusData = await statusResp.json() as { status?: string }
+    const status = statusData.status ?? null
 
     expect(status).toBe('CANCELLED')
     await page.screenshot({ path: '/tmp/e2e-journey-order-cancelled.png', fullPage: true })

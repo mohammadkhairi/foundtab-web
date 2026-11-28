@@ -1,3 +1,5 @@
+@AGENTS.md
+
 # FoundTab Web — Coding Rules
 
 All global rules in `~/.claude/CLAUDE.md` apply. This file adds repo-specific guidance.
