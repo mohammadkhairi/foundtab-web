@@ -37,9 +37,20 @@ import EventDispatchFormPage from './features/eventDispatches/pages/EventDispatc
 import EventDispatchDetailPage from './features/eventDispatches/pages/EventDispatchDetailPage'
 import InvoiceListPage from './features/billing/pages/InvoiceListPage'
 
+function PageSkeleton() {
+  return (
+    <div className="p-4 space-y-4 animate-pulse">
+      <div className="h-7 bg-gray-100 rounded-lg w-1/3" />
+      <div className="h-28 bg-gray-100 rounded-xl" />
+      <div className="h-28 bg-gray-100 rounded-xl" />
+      <div className="h-28 bg-gray-100 rounded-xl" />
+    </div>
+  )
+}
+
 function ModuleGate({ moduleKey, children }: { moduleKey: string; children: React.ReactNode }) {
   const { isAccessible, isLocked, loading } = useFeatureFlags()
-  if (loading) return null
+  if (loading) return <PageSkeleton />
   if (!isAccessible(moduleKey) && !isLocked(moduleKey)) return <Navigate to="/dashboard" replace />
   if (isLocked(moduleKey)) return <Navigate to="/billing" replace />
   return <>{children}</>

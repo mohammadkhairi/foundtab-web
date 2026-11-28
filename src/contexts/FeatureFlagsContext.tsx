@@ -58,10 +58,19 @@ export function FeatureFlagsProvider({ children }: { children: ReactNode }) {
   // Main flags query — cached 60s in memory, browser HTTP cache also holds 60s
   const { data, isPending } = useQuery<FlagsResponse>({
     queryKey: ['feature-flags'],
-    queryFn: () => apiFetch<FlagsResponse>('/api/v1/feature-flags', { token }),
+    queryFn: async () => {
+      const controller = new AbortController()
+      const timer = setTimeout(() => controller.abort(), 10_000)
+      try {
+        return await apiFetch<FlagsResponse>('/api/v1/feature-flags', { token, signal: controller.signal })
+      } finally {
+        clearTimeout(timer)
+      }
+    },
     enabled: !!token,
     staleTime: 60_000,
     gcTime: 10 * 60_000,
+    networkMode: 'always',
     retry: 2,
   })
 
@@ -74,6 +83,7 @@ export function FeatureFlagsProvider({ children }: { children: ReactNode }) {
     staleTime: 0,
     gcTime: 0,
     refetchInterval: 10_000,
+    networkMode: 'always',
     retry: false,
   })
 

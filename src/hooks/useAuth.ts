@@ -19,7 +19,7 @@ export function getStoredToken(): string | undefined {
   const t = localStorage.getItem(TOKEN_KEY)
   if (!t) return undefined
   const p = decodeJwt(t)
-  if (!p || isExpired(p)) { localStorage.removeItem(TOKEN_KEY); return undefined }
+  if (!p || isExpired(p)) return undefined
   return t
 }
 
@@ -48,7 +48,21 @@ export function useAuth(): AuthState {
   }, [])
 
   useEffect(() => {
-    const handleVisibility = () => setToken(getStoredToken())
+    // Clean up any expired token sitting in storage on mount
+    const raw = localStorage.getItem(TOKEN_KEY)
+    if (raw) {
+      const p = decodeJwt(raw)
+      if (!p || isExpired(p)) localStorage.removeItem(TOKEN_KEY)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState !== 'visible') return
+      const fresh = getStoredToken()
+      // Only update state when the value actually changed to avoid re-renders
+      setToken((prev) => (prev === fresh ? prev : fresh))
+    }
     window.addEventListener('visibilitychange', handleVisibility)
     return () => window.removeEventListener('visibilitychange', handleVisibility)
   }, [])

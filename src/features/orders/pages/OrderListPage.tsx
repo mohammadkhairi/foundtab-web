@@ -152,13 +152,13 @@ export default function OrderListPage() {
 
       {/* Mobile header */}
       <header className="bg-white/95 backdrop-blur border-b border-gray-100 px-4 py-3 sticky top-0 z-10 md:hidden">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center justify-between mb-3">
           <h1 className="text-base font-semibold text-gray-900" data-tour="order-list">{t('orders_title')}</h1>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2.5">
             <button
               onClick={() => void handleDownloadTemplate()}
               disabled={downloading}
-              className="text-xs text-gray-500 border border-gray-200 px-3 py-1.5 rounded-full font-medium disabled:opacity-50"
+              className="text-xs text-gray-500 border border-gray-200 px-2.5 py-1.5 rounded-full font-medium disabled:opacity-50"
               title="Download order template"
             >
               {downloading ? '...' : (
@@ -176,7 +176,7 @@ export default function OrderListPage() {
             </button>
             <button
               onClick={() => navigate('/orders/new')}
-              className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center"
+              className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center shrink-0"
               aria-label={t('orders_add')}
             >
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -185,7 +185,7 @@ export default function OrderListPage() {
             </button>
           </div>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-1">
+        <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
           {filters.map((f) => (
             <button
               key={f.value}
